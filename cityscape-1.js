@@ -1,5 +1,6 @@
 define("RNG", ["require", "exports"], function (require, exports) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     class RNG {
         constructor(seed) {
             this.seed = seed;
@@ -32,6 +33,7 @@ define("RNG", ["require", "exports"], function (require, exports) {
 });
 define("mycolor", ["require", "exports"], function (require, exports) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     class Color {
         normalize() {
             this.red = Math.max(0, Math.min(1, this.red));
@@ -111,13 +113,14 @@ define("mycolor", ["require", "exports"], function (require, exports) {
 });
 define("geom-utils", ["require", "exports", "RNG"], function (require, exports, RNG_1) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var SequenceType;
     (function (SequenceType) {
         SequenceType[SequenceType["ONE_SIDE_REG"] = 0] = "ONE_SIDE_REG";
         SequenceType[SequenceType["BOTH_SIDE_REG"] = 1] = "BOTH_SIDE_REG";
         SequenceType[SequenceType["ONE_SIDE_RAND"] = 2] = "ONE_SIDE_RAND";
         SequenceType[SequenceType["BOTH_SIDE_RAND"] = 3] = "BOTH_SIDE_RAND";
-    })(exports.SequenceType || (exports.SequenceType = {}));
-    var SequenceType = exports.SequenceType;
+    })(SequenceType = exports.SequenceType || (exports.SequenceType = {}));
     ;
     class Sequence {
         constructor(type, amp, startSide = false, rand = new RNG_1.RNG(Math.random() * 9778576)) {
@@ -155,6 +158,7 @@ define("geom-utils", ["require", "exports", "RNG"], function (require, exports, 
 });
 define("cityscape-1", ["require", "exports", "RNG", "mycolor", "geom-utils"], function (require, exports, RNG_2, mycolor_1, geom_utils_1) {
     "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
     class Stop {
         constructor(offset, col, opacity = undefined) {
             this.opacity = undefined;
@@ -171,6 +175,7 @@ define("cityscape-1", ["require", "exports", "RNG", "mycolor", "geom-utils"], fu
     class Grad {
         constructor() {
             this.stops = [];
+            this.isUserSpace = false;
             this.nm = "unnamed";
         }
         addStop(offset, col, opacity = undefined) {
@@ -187,9 +192,18 @@ define("cityscape-1", ["require", "exports", "RNG", "mycolor", "geom-utils"], fu
             this.x2 = x2;
             this.y2 = y2;
         }
+        copy() {
+            let lg = new LinearGradient(this.x1, this.y1, this.x2, this.y2);
+            lg.stops = this.stops;
+            lg.isUserSpace = this.isUserSpace;
+            return lg;
+        }
+        static resetId() {
+            LinearGradient.id = 0;
+        }
         toSVG() {
             return "<linearGradient id=\"" + this.nm + "\" x1=\"" + this.x1 + "\" x2=\"" + this.x2
-                + "\" y1=\"" + this.y1 + "\" y2=\"" + this.y2 + "\">\n"
+                + "\" y1=\"" + this.y1 + "\" y2=\"" + this.y2 + "\"" + (this.isUserSpace ? " gradientUnits=\"userSpaceOnUse\"" : "") + ">\n"
                 + this.stops.map(x => x.toSVG()).join("\n")
                 + "\n</linearGradient>";
         }
@@ -210,10 +224,13 @@ define("cityscape-1", ["require", "exports", "RNG", "mycolor", "geom-utils"], fu
             Shape.id = 0;
         }
         toSVGSub() {
+            let isFillGrad = (this.fill instanceof Grad);
             return (this.nm != null ? (" id=\"" + this.nm + "\"") : "")
                 + (this.cls ? (" class=\"" + this.cls + "\"") : "")
                 + (this.trans.length > 0 ? (" transform=\"" + this.trans + "\"") : "")
-                + (this.fill ? (" fill=\"" + this.fill + "\"") : "")
+                + (this.fill ? (" fill=\"" +
+                    (isFillGrad ? "url(#" + this.fill.nm + ")" : this.fill)
+                    + "\"") : "")
                 + (this.filter ? (" filter=\"url(#" + this.filter + ")\"") : "")
                 + (this.opacity ? (" fill-opacity=\"" + this.opacity + "\"") : "")
                 + (this.strokeColor ? (" stroke=\"" + this.strokeColor + "\"") : "")
@@ -232,6 +249,12 @@ define("cityscape-1", ["require", "exports", "RNG", "mycolor", "geom-utils"], fu
             if (this.clip) {
                 clips[this.nm] = this.clip;
                 shrefs[this.clip.ref.nm] = this.clip.ref;
+            }
+            if (this.fill instanceof Grad) {
+                grads[this.fill.nm] = this.fill;
+            }
+            if (this.strokeColor instanceof Grad) {
+                grads[this.strokeColor.nm] = this.strokeColor;
             }
         }
         translate(x, y = undefined) {
@@ -308,8 +331,11 @@ define("cityscape-1", ["require", "exports", "RNG", "mycolor", "geom-utils"], fu
             s += "<defs>\n";
             if (this.defExtra)
                 s += this.defExtra + "\n";
+            if (Object.keys(grads).length > 0) {
+                Object.keys(grads).forEach(nm => { s += grads[nm].toSVG() + "\n"; console.log("CALLED " + nm); });
+            }
             if (Object.keys(shrefs).length > 0) {
-                Object.keys(shrefs).forEach(nm => { s += shrefs[nm].toSVG() + "\n"; console.log("CALLED " + nm); });
+                Object.keys(shrefs).forEach(nm => { s += shrefs[nm].toSVG() + "\n"; /*console.log("CALLED "+nm);*/ });
             }
             s += "\n";
             if (Object.keys(clips).length > 0) {
@@ -756,6 +782,7 @@ define("cityscape-1", ["require", "exports", "RNG", "mycolor", "geom-utils"], fu
         for (let i = 0; i < 10; i++) {
             let p = Pat.createRand(rand, W, mainHue, hueVar);
             svgml += p.toSVG(800 / W);
+            //console.log("---"+svgml);
         }
         document.getElementById("canvas").innerHTML = svgml;
     }
@@ -841,6 +868,7 @@ define("cityscape-1", ["require", "exports", "RNG", "mycolor", "geom-utils"], fu
             ];
         }
         makeWindowsGrid(quads, div_x, div_y, cov_x = .5, cov_y = .5, chance_big = 0, max_big_x = 1, max_big_y = 1, darkChance = 0) {
+            // console.log("DC "+darkChance);
             div_x = div_x || 1;
             div_y = div_y || 1;
             let idiv = 1 / div_x;
@@ -916,7 +944,8 @@ define("cityscape-1", ["require", "exports", "RNG", "mycolor", "geom-utils"], fu
         let g1 = new SVGGroup();
         g1.fill = winColor;
         let reg = CPoly.makeRegPoly(N, cx, cy, r, angle);
-        reg.fill = "black";
+        if (winColor)
+            reg.fill = "black";
         g1.add(reg);
         if (!winColor)
             return g1;
@@ -943,7 +972,8 @@ define("cityscape-1", ["require", "exports", "RNG", "mycolor", "geom-utils"], fu
     }
     function makeRectWindows(bmidx, bboty, bw, bh, bplan, winColor) {
         let br = new Rect(bmidx - bw / 2, bboty - bh, bw, bh);
-        br.fill = "black";
+        if (winColor)
+            br.fill = "black";
         // br.fill="gray";
         // br.strokeColor="red";
         let tdx = Math.round(bplan.divx * bw / 100);
@@ -1023,16 +1053,19 @@ define("cityscape-1", ["require", "exports", "RNG", "mycolor", "geom-utils"], fu
         let numC = n;
         let cloudBrt = 0.05; //.0+rand.nextDouble()*.1;
         let g = new SVGGroup();
+        let varScaleTop = .5 + rand.nextDouble() * .5;
+        let varScaleBot = rand.nextDouble();
         for (let i = 0; i < numC; i++) {
-            let c = makeCloud(type, w, h, skyHue, sunHue, cloudBrt, sunY);
+            let c = makeCloud(type, w, h, skyHue, sunHue, cloudBrt, sunY, varScaleTop, varScaleBot);
             g.add(c);
         }
         return g;
     }
-    function makeCloud(type, w, h, skyHue, sunHue, cloudBrt, sunY) {
+    function makeCloud(type, w, h, skyHue, sunHue, cloudBrt, sunY, varScaleTop, varScaleBot) {
         // TODO IDEA: Arrange clouds by distance from sun, make them
         // bright to dark.
         let p = new CPoly();
+        // let pp;
         var AMT1, AMT2;
         var x, y;
         let open = true;
@@ -1040,7 +1073,7 @@ define("cityscape-1", ["require", "exports", "RNG", "mycolor", "geom-utils"], fu
         if (type == CloudType.FLAT_WIDE) {
             // x = rand.nextDouble() * (800-w);
             x = -200 + rand.nextDouble() * (1200 - w);
-            y = sunY - 200 * rand.nextDouble();
+            y = sunY - 300 * rand.nextDouble();
             // Wide thin
             // p.add(0, 400);
             // p.add(200, 350);
@@ -1048,15 +1081,20 @@ define("cityscape-1", ["require", "exports", "RNG", "mycolor", "geom-utils"], fu
             // p.add(600, 350);
             // p.add(800, 400);
             p.add(x, y);
-            p.add(x + w / 5, y - h);
+            p.add(x + w / 4, y - h);
             // p.add(400, 380);
-            p.add(x + w - w / 5, y - h);
+            p.add(x + w - w / 4, y - h);
             p.add(x + w, y);
+            // pp = new CPoly();
+            // pp.add(x, y);
+            // pp.add(x+w/5, y-h-5);
+            // pp.add(x+w-w/5, y-h-5);
+            // pp.add(x+w, y);
             AMT1 = .2;
             AMT2 = .1;
             cloudHue = skyHue;
             cloudCol1 = mycolor_1.hsbToRGB(cloudHue, .6, .3).toHex();
-            cloudColBright = mycolor_1.hsbToRGB(sunHue, .9, .9).toHex();
+            cloudColBright = mycolor_1.hsbToRGB(sunHue, .8, .8).toHex();
         }
         else if (type == CloudType.TALL_THICK) {
             x = -200 + rand.nextDouble() * (1200 - w);
@@ -1075,36 +1113,65 @@ define("cityscape-1", ["require", "exports", "RNG", "mycolor", "geom-utils"], fu
             open = false;
             cloudHue = skyHue /*+ rand.nextDouble()*.1-.05*/;
             cloudCol1 = mycolor_1.hsbToRGB(cloudHue, 0, cloudBrt).toHex();
+            // cloudColBright = hsbToRGB(sunHue, .9, .9).toHex();
         }
-        let p2 = subDivPoly(p, 0, AMT1, open);
-        p2 = subDivPoly(p2, 0, AMT2, open);
-        p2 = subDivPoly(p2, 0, AMT2, open);
-        p2 = subDivPoly(p2, 0, AMT2, open);
-        p2 = subDivPoly(p2, 0, AMT2, open); // for tall
+        let cloudSubDiv = function (inP, open, amt, times) {
+            let outP = inP;
+            for (let i = 0; i < times; i++) {
+                outP = subDivPoly(outP, 0, amt, open);
+            }
+            //  = subDivPoly(inP, 0, AMT1, open);
+            // outP = subDivPoly(outP, 0, AMT2, open);
+            // outP = subDivPoly(outP, 0, AMT2, open);
+            // outP = subDivPoly(outP, 0, AMT2, open);
+            // outP = subDivPoly(outP, 0, AMT2, open);
+            return outP;
+        };
+        let p2 = cloudSubDiv(p, open, AMT1 * varScaleTop, 1);
+        p2 = cloudSubDiv(p2, open, AMT2 * varScaleTop, 2);
+        p2 = cloudSubDiv(p2, open, AMT2 * varScaleTop, 2);
         //console.log(p2.x);
         //console.log(p2.y);
         // p2.translate(-200, -100);
         let g1 = new SVGGroup();
         if (type == CloudType.FLAT_WIDE) {
+            let pBot = new CPoly();
+            pBot.add(x + w, 0);
+            pBot.add(x, 0);
+            let pb1 = cloudSubDiv(pBot, true, AMT1 * varScaleBot / 4, 1);
+            pb1 = cloudSubDiv(pb1, true, AMT2 * varScaleBot / 2, 2);
+            let ppb1 = pb1;
+            pb1 = cloudSubDiv(pb1, true, AMT2 * varScaleBot / 2, 2);
+            // ppb1 = cloudSubDiv(pBot, true, AMT1/4, 1);
+            // ppb1 = cloudSubDiv(ppb1, true, AMT2/4, 2);
+            ppb1 = cloudSubDiv(ppb1, true, AMT2 * varScaleBot / 1.5, 2);
+            pb1.fill = cloudColBright;
+            pb1.translate(0, y);
+            pb1.scale(1, 1.1);
+            g1.add(pb1);
+            ppb1.fill = cloudCol1;
+            // g1.add(ppb1);
+            for (let i = 0; i < ppb1.x.length; i++) {
+                p2.add(ppb1.x[i], ppb1.y[i] + y);
+            }
             // let r1 = new ShapeRef(p2);
             // r1.translate(-100, -100);
-            let ln = new CPoly();
-            ln.closed = false;
-            ln.add(x, y);
-            ln.add(x + w, y);
-            ln.strokeColor = cloudColBright;
-            ln.strokeWidth = 2;
-            // r1.stroke = cloudColBright;
-            // g1.add(r1);
-            g1.add(ln);
+            // let ln = new CPoly();
+            // ln.closed = false;
+            // ln.add(x, y);
+            // ln.add(x+w, y);
+            // ln.strokeColor = cloudColBright;
+            // ln.strokeWidth = 2;
+            // // r1.stroke = cloudColBright;
+            // // g1.add(r1);
+            // g1.add(ln);
         }
-        let r2 = new ShapeRef(p2);
-        r2.translate(-0, -0 - 1);
-        r2.fill = cloudCol1;
-        g1.add(r2);
+        p2.translate(-0, -0 - 1);
+        p2.fill = cloudCol1;
+        g1.add(p2);
         return g1;
     }
-    function makeRectCity(CITY_BOT, winHue, r) {
+    function makeRectCity(CITY_BOT, winHue, r, backBuildGrad) {
         let BUIL_W = rand.nextInt(50, 100);
         let BUIL_H = rand.nextInt(400, 500);
         let bplan = BPlan.createRand();
@@ -1125,51 +1192,73 @@ define("cityscape-1", ["require", "exports", "RNG", "mycolor", "geom-utils"], fu
                 geom_utils_1.SequenceType.ONE_SIDE_RAND, geom_utils_1.SequenceType.BOTH_SIDE_RAND]), (.25 + rand.nextDouble() * .5), rand.pick([true, false]), rand);
             segYVar = segH / 2;
         }
-        let taper = rand.pick([0, rand.nextDouble() * BUIL_W / 10]); //amt reduced
-        for (let bcx = 0; bcx < 800 * 1.2; bcx += BUIL_W * .9) {
-            //let thisWinColor = rand.pick([winColor, winColor2]);
-            let thisWinColor = bcx == 0 ? winColor2 : null;
-            let bw = (1 + rand.nextDouble()) * BUIL_W;
-            let bh = (1 + rand.nextDouble() * .5) * BUIL_H;
-            if (bcx == 0)
-                bh = BUIL_H * 1.1;
-            let numSegs = Math.round(bh / segH) || 1;
-            let segHAdj = bh / numSegs;
-            let g1 = new SVGGroup();
-            let segs = [];
-            let extraSegs = [];
-            let isPoly = true;
-            for (let jj = numSegs - 1; jj >= 0; jj--) {
-                for (let sc = 0; sc < 1 + numExatraSegs; sc++) {
-                    let bot = -bh * jj / numSegs; // scaled later
-                    let bwSeg = bw - jj * taper;
-                    let g2;
-                    g2 = makeRectWindows(/*bcx+*/ (sc > 0 ? (seq.next() * bwSeg) : 0), bot, //+(sc>0?(rand.nextDouble()-.5)*segYVar:0),
-                    bwSeg, segHAdj * (sc > 0 ? extraSegHMul : 1) + 2, bplan, thisWinColor);
-                    if (sc == 0)
-                        segs.push(g2);
-                    else
-                        extraSegs.push(g2);
+        let taper = rand.pick([0, (rand.nextDouble() /*-.5*/) * BUIL_W / 10]); //amt reduced
+        let ROWS = 3; // including centerpiece
+        for (let row = 0; row < ROWS; row++) {
+            let rowGrad = backBuildGrad.copy();
+            rowGrad.y1 = -1000 - row * 600;
+            rowGrad.y2 = 0;
+            for (let bcx = 0; bcx < 800 * 1.25; bcx += BUIL_W * (.4 + .3 * row)) {
+                //let thisWinColor = rand.pick([winColor, winColor2]);
+                let thisWinColor = null;
+                if (row == ROWS - 1)
+                    thisWinColor = winColor2;
+                // else if (row > 0) thisWinColor = winColor;
+                let bw = (1 + rand.nextDouble()) * BUIL_W;
+                let bh = (.7 + rand.nextDouble() * .2 + (ROWS - row - 1) * .3) * BUIL_H;
+                // if (bcx == 0)
+                if (row == ROWS - 1)
+                    bh = BUIL_H * 1.1;
+                let numSegs = Math.round(bh / segH) || 1;
+                let segHAdj = bh / numSegs;
+                let g1 = new SVGGroup();
+                let segs = [];
+                let extraSegs = [];
+                let isPoly = true;
+                let yMin = 800;
+                for (let jj = numSegs - 1; jj >= 0; jj--) {
+                    for (let sc = 0; sc < 1 + numExatraSegs; sc++) {
+                        let bot = -bh * jj / numSegs; // scaled later
+                        let bwSeg = bw - jj * taper;
+                        let g2;
+                        let ht = segHAdj * (sc > 0 ? extraSegHMul : 1) + 2;
+                        g2 = makeRectWindows(/*bcx+*/ (sc > 0 ? (seq.next() * bwSeg) : 0), bot, //+(sc>0?(rand.nextDouble()-.5)*segYVar:0),
+                        bwSeg, ht, bplan, thisWinColor);
+                        if (yMin > bot - ht)
+                            yMin = bot - ht;
+                        if (sc == 0)
+                            segs.push(g2);
+                        else
+                            extraSegs.push(g2);
+                        // g1.add(g2);
+                    }
                 }
+                // Main coulmn in front of extra segs
+                segs.forEach(s => extraSegs.push(s));
+                segs = extraSegs;
+                if (seq && seq.isRandom() && rand.nextInt(1, 10) > 6)
+                    rand.shuffle(segs);
+                segs.forEach(s => g1.add(s));
+                if (row == ROWS - 1) 
+                // if (bcx == 0)
+                {
+                    g1.translate((.3 + .4 * rand.nextDouble()) * 800, CITY_BOT);
+                    g1.scale(1.2, 1.2);
+                    g1.fill = "black";
+                }
+                else {
+                    g1.translate(bcx - bw - bw * (row % 2) / 2, CITY_BOT);
+                    g1.scale(.5, .5);
+                    g1.fill = rowGrad;
+                    // console.log("--"+g1.toSVG());
+                }
+                buildings.push(g1);
+                if (row == ROWS - 1)
+                    break;
             }
-            // Main coulmn in front of extra segs
-            segs.forEach(s => extraSegs.push(s));
-            segs = extraSegs;
-            if (seq && seq.isRandom() && rand.nextInt(1, 10) > 6)
-                rand.shuffle(segs);
-            segs.forEach(s => g1.add(s));
-            if (bcx == 0) {
-                g1.translate((.3 + .4 * rand.nextDouble()) * 800, CITY_BOT);
-                g1.scale(1.2, 1.2);
-            }
-            else {
-                g1.translate(bcx - bw, CITY_BOT);
-                g1.scale(.5, .5);
-            }
-            buildings.push(g1);
         }
         // rand.shuffle(buildings);
-        buildings = buildings.reverse();
+        // buildings = buildings.reverse();
         buildings.forEach(g => r.add(g));
     }
     function reDrawCity2() {
@@ -1187,9 +1276,14 @@ define("cityscape-1", ["require", "exports", "RNG", "mycolor", "geom-utils"], fu
         let winHue = backHue + .5;
         let CITY_BOT = 700;
         let back = new Rect(0, 0, 800, 800);
-        back.fill = mycolor_1.hsbToRGB(backHue, 1, .5).toHex();
+        // back.fill = hsbToRGB(backHue, 1, .5).toHex();
+        back.fill = new LinearGradient(0, 0, 0, 1);
+        let backBrt1 = .2 + .3 * rand.nextDouble();
+        let backBrt2 = .2 + .4 * rand.nextDouble();
+        back.fill.addStop(0, mycolor_1.hsbToRGB(backHue, 1, backBrt1).toHex());
+        back.fill.addStop(100, mycolor_1.hsbToRGB(backHue, 1, backBrt2).toHex());
         r.add(back);
-        let bot = new Rect(0, CITY_BOT, 800, 800 - CITY_BOT);
+        let bot = new Rect(0, CITY_BOT - 20, 800, 800 - CITY_BOT + 20);
         bot.fill = "black";
         let sunY = (rand.nextDouble() * .6 + .2) * 600;
         let sun = new Circle((rand.nextDouble() * .6 + .2) * 800, sunY, 100 + rand.nextInt(0, 50));
@@ -1201,22 +1295,27 @@ define("cityscape-1", ["require", "exports", "RNG", "mycolor", "geom-utils"], fu
             // clouds.filter = "f1";
             r.add(clouds);
         }
+        let builLG = new LinearGradient(0, 0, 0, 1);
+        builLG.addStop(0, mycolor_1.hsbToRGB(backHue, 1, (backBrt1 + backBrt2) / 2).toHex(), 1);
+        builLG.addStop(100, "#000000", 1);
+        builLG.isUserSpace = true;
         rand.nextInt(0, 1) ?
-            makeRectCity(CITY_BOT, winHue, r) :
-            makePolyCity(CITY_BOT, winHue, r);
+            makeRectCity(CITY_BOT, winHue, r, builLG) :
+            makePolyCity(CITY_BOT, winHue, r, builLG);
         r.add(bot);
         let svgml = r.toSVG();
         document.getElementById("canvas").innerHTML = svgml;
         // console.log(svgml);
         console.log(svgml.length);
     }
-    function makePolyCity(CITY_BOT, winHue, r) {
+    function makePolyCity(CITY_BOT, winHue, r, backBuildGrad) {
         let R = 50 + rand.nextInt(0, 50);
         let BUIL_H = rand.nextInt(400, 500);
         let N1 = rand.nextInt(3, 10), N2 = rand.nextInt(3, 10);
         if (N1 > N2)
             [N2, N1] = [N1, N2];
         let numSides = rand.pick([
+            function (idx) { return N1; },
             function (idx) { return N1; },
             function (idx) { return N1; },
             function (idx) { return rand.nextInt(N1, N2); },
@@ -1231,7 +1330,7 @@ define("cityscape-1", ["require", "exports", "RNG", "mycolor", "geom-utils"], fu
         let winColor2 = mycolor_1.hsbToRGB(winHue, .8, .8).toHex();
         let branches = false; // Branches make the scene too busy
         let taper = .7 + rand.nextDouble() * .25;
-        //proportion to reduce by
+        //proportion to change by
         let polyAng = rand.pick([
             function (idx, numSides) { return undefined; },
             function (idx, numSides) { return ((numSides % 2 == 0) ? -(180 / numSides) - 90 : -90) + 360 / 2 / numSides; },
@@ -1239,78 +1338,91 @@ define("cityscape-1", ["require", "exports", "RNG", "mycolor", "geom-utils"], fu
             function (idx, numSides) { return rand.pick([undefined, ((numSides % 2 == 0) ? -(180 / numSides) - 90 : -90) + 360 / 2 / numSides]); },
             function (idx, numSides) { return (idx % 2 == 0) ? undefined : ((numSides % 2 == 0) ? -(180 / numSides) - 90 : -90) + 360 / 2 / numSides; },
         ]);
-        for (let bcx = 0; bcx < 800 * 1.2; bcx += R) {
-            let thisWinColor = bcx == 0 ? winColor2 : null;
-            let r = R * (.7 + rand.nextDouble() * .3);
-            if (bcx == 0)
-                r = R;
-            let this_r = r;
-            let bh = (1 + rand.nextDouble() * .5) * BUIL_H;
-            if (bcx == 0)
-                bh = BUIL_H * 1.1;
-            let g1 = new SVGGroup();
-            let segs = [];
-            let back = [];
-            let branch = [];
-            let polyBot = 0; //- bh*.66/divs * .7 * (numSegs-1);
-            let gap = .95 + rand.nextDouble() * .2;
-            let makeBackSeg = function (x1, y1, x2, y2, d1, d2) {
-                let dx = x2 - x1, dy = y2 - y1;
-                let l = Math.sqrt(dx * dx + dy * dy);
-                let nx = dy / l, ny = -dx / l;
-                let ret = new CPoly();
-                ret.add(x1 - d1 * nx, y1 - d1 * ny);
-                ret.add(x2 - d2 * nx, y2 - d2 * ny);
-                ret.add(x2 + d2 * nx, y2 + d2 * ny);
-                ret.add(x1 + d1 * nx, y1 + d1 * ny);
-                return ret;
-            };
-            back.push(makeBackSeg(0, this_r, 0, 0, this_r * .5 / taper, this_r * .5));
-            let idx = 0;
-            while (polyBot > -bh) {
-                let this_numSides = numSides(idx);
-                let thisAng = polyAng(idx, this_numSides);
-                let g2 = makePolyWithWindows(/*bcx+*/ 0, polyBot, r, this_numSides, bplan, thisWinColor, thisAng);
-                segs.push(g2);
-                let r1 = taper * r;
-                let polyBot_next = polyBot - (r + r1) * gap;
-                back.push(makeBackSeg(0, polyBot, 0, polyBot_next, r * .5, r1 * .5));
-                if (branches && polyBot < -bh / 2) {
-                    // Branches making the scene too busy
-                    for (let ii = 0; ii < this_numSides; ii++) {
-                        if (rand.nextDouble() > .5)
-                            continue;
-                        let a = thisAng + (ii + .5) * 360 / this_numSides;
-                        let rad = a * Math.PI / 180;
-                        let dx = Math.cos(rad);
-                        let dy = Math.sin(rad);
-                        let g3 = makePolyWithWindows(dx * r * 1.2, polyBot + dy * r * 1.5, r / 2, this_numSides, bplan, thisWinColor, polyAng(idx + ii, this_numSides));
-                        branch.push(g3);
+        let ROWS = 3;
+        for (let row = 0; row < ROWS; row++) {
+            let rowGrad = backBuildGrad.copy();
+            rowGrad.y1 = -800 - row * 600;
+            rowGrad.y2 = 0;
+            for (let bcx = 0; bcx < 800 * 1.29; bcx += R * (.4 + .6 * row)) {
+                let thisWinColor = (row == ROWS - 1) ? winColor2 : null;
+                let r = R * (.7 + rand.nextDouble() * .3);
+                if (row == ROWS - 1)
+                    r = R;
+                let this_r = r;
+                // let bh = (1+rand.nextDouble()*.5) * BUIL_H;
+                let bh = (.7 + rand.nextDouble() * .5 + (ROWS - row - 1) * .3) * BUIL_H;
+                if (row == ROWS - 1)
+                    // if (bcx == 0)
+                    bh = BUIL_H * 1.1;
+                let g1 = new SVGGroup();
+                let segs = [];
+                let back = [];
+                let branch = [];
+                let polyBot = 0; //- bh*.66/divs * .7 * (numSegs-1);
+                let gap = .95 + rand.nextDouble() * .2;
+                let makeBackSeg = function (x1, y1, x2, y2, d1, d2) {
+                    let dx = x2 - x1, dy = y2 - y1;
+                    let l = Math.sqrt(dx * dx + dy * dy);
+                    let nx = dy / l, ny = -dx / l;
+                    let ret = new CPoly();
+                    ret.add(x1 - d1 * nx, y1 - d1 * ny);
+                    ret.add(x2 - d2 * nx, y2 - d2 * ny);
+                    ret.add(x2 + d2 * nx, y2 + d2 * ny);
+                    ret.add(x1 + d1 * nx, y1 + d1 * ny);
+                    return ret;
+                };
+                back.push(makeBackSeg(0, this_r, 0, 0, this_r * .5 / taper, this_r * .5));
+                let idx = 0;
+                while (polyBot > -bh) {
+                    let this_numSides = numSides(idx);
+                    let thisAng = polyAng(idx, this_numSides);
+                    let g2 = makePolyWithWindows(/*bcx+*/ 0, polyBot, r, this_numSides, bplan, thisWinColor, thisAng);
+                    segs.push(g2);
+                    let r1 = taper * r;
+                    let polyBot_next = polyBot - (r + r1) * gap;
+                    back.push(makeBackSeg(0, polyBot, 0, polyBot_next, r * .5, r1 * .5));
+                    if (branches && polyBot < -bh / 2) {
+                        // Branches making the scene too busy
+                        for (let ii = 0; ii < this_numSides; ii++) {
+                            if (rand.nextDouble() > .5)
+                                continue;
+                            let a = thisAng + (ii + .5) * 360 / this_numSides;
+                            let rad = a * Math.PI / 180;
+                            let dx = Math.cos(rad);
+                            let dy = Math.sin(rad);
+                            let g3 = makePolyWithWindows(dx * r * 1.2, polyBot + dy * r * 1.5, r / 2, this_numSides, bplan, thisWinColor, polyAng(idx + ii, this_numSides));
+                            branch.push(g3);
+                        }
                     }
+                    polyBot = polyBot_next;
+                    r = r1;
+                    idx++;
+                    if (r < 10)
+                        break;
                 }
-                polyBot = polyBot_next;
-                r = r1;
-                idx++;
-                if (r < 10)
+                back.pop();
+                back.forEach(s => g1.add(s));
+                branch.forEach(s => g1.add(s));
+                segs.forEach(s => g1.add(s));
+                if (row == ROWS - 1) 
+                // if (bcx == 0)
+                {
+                    g1.translate((.3 + .4 * rand.nextDouble()) * 800, CITY_BOT - this_r);
+                    g1.scale(1.2, 1.2);
+                }
+                else {
+                    g1.translate(bcx - 2 * R + R * (row % 2) / 2, CITY_BOT - this_r / 2.2);
+                    // g1.translate(, CITY_BOT-polyBot+2*R);
+                    g1.scale(.5, .5); //*(isPoly?-1:1)
+                    g1.fill = rowGrad;
+                }
+                buildings.push(g1);
+                if (row == ROWS - 1)
                     break;
             }
-            back.pop();
-            back.forEach(s => g1.add(s));
-            branch.forEach(s => g1.add(s));
-            segs.forEach(s => g1.add(s));
-            if (bcx == 0) {
-                g1.translate((.3 + .4 * rand.nextDouble()) * 800, CITY_BOT - this_r);
-                g1.scale(1.2, 1.2);
-            }
-            else {
-                g1.translate(bcx - 2 * R + R * rand.nextDouble(), CITY_BOT - this_r / 2.2);
-                // g1.translate(, CITY_BOT-polyBot+2*R);
-                g1.scale(.5, .5); //*(isPoly?-1:1)
-            }
-            buildings.push(g1);
         }
         // rand.shuffle(buildings);
-        buildings = buildings.reverse();
+        // buildings = buildings.reverse();
         buildings.forEach(g => r.add(g));
     }
     let f = function () {
