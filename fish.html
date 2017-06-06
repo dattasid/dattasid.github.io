@@ -1,0 +1,77 @@
+<html>
+<style type="text/css">
+body {
+  color:red;
+  background:black;
+}
+
+.xy
+{
+//fill:red;
+//stroke:white;
+//stroke-width:5;
+//opacity:1
+}
+
+</style>
+<script>
+function downloadPNG(){
+    
+    //document.getElementById("downloader").download = "?.png";
+    document.getElementById("downloader").href = document.getElementById("canvas2").toDataURL("image/png").replace(/^data:image\/[^;]/, 'data:application/octet-stream');
+    console.log(document.getElementById("downloader").href)
+}
+
+function drawOnCanvas(svgdata)
+{
+
+    var canvas = document.getElementById('canvas2');
+    var ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = true;
+    
+    var DOMURL = window.URL || window.webkitURL || window;
+
+    var img = new Image();
+    var svg = new Blob([svgdata], {type: 'image/svg+xml'});
+    var url = DOMURL.createObjectURL(svg);
+
+    img.onload = function() {
+      ctx.drawImage(img, 0, 0);
+      DOMURL.revokeObjectURL(url);
+    }
+
+    img.src = url;
+}
+
+function setupSVGSave(svgstr)
+{
+    var a = document.getElementById("saveSVG");
+    var file = new Blob([svgstr], { type: 'image/svg+xml' });
+    a['href'] = URL.createObjectURL(file);
+    a['download'] = 'fish.svg';
+}
+</script>
+<body>
+
+<!--svg width="800" height="800" id="canvas">
+</svg-->
+
+<!-- target for the SVG -->
+<!--div id="canvas"></div-->
+<span id="canvas"></span>
+
+
+<canvas id="canvas2" style="border:2px solid black;" width="1000" height="600">
+</canvas>
+
+
+<br/>
+
+<a href="#" id="downloader" download="underwater.png" ><button type="button" onclick="downloadPNG()">Download PNG</button></a>
+
+<a href="#" id="saveSVG" download="underwater.svg" ><button type="button">Download SVG</button></a>
+
+<p id="footer" style="font-size:80%; color:white;">(C) Sid Datta. Downloaded image may be considered under Creative Commons with Attribution.</p>
+</body>
+<script data-main="fish" src="require.js"></script>
+</html>
