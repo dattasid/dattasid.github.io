@@ -48,3 +48,10 @@ Created for Reddit's r/proceduralgeneration Procedural Weapon contest, This prog
 <img src="examples/sword2.svg" width="150">
 <img src="examples/sword3.svg" width="150">
 <img src="examples/sword4.svg" width="150">
+
+## Geometric shapes
+[Live Demo](https://dattasid.github.io/geom-design-1.html)
+
+Simple rectangles or triangles with gradient. 
+
+<img src="examples/geomgrad1.PNG" width="150"> <img src="examples/geomgrad2.PNG" width="150">
