@@ -38,3 +38,13 @@ Created for Reddit's r/proceduralgeneration Procedural Creature challenge, this 
 <img src="examples/insect1.jpg" width="150"> <img src="examples/insect2.jpg" width="150">
 <img src="examples/insect3.jpg" width="150">
 <img src="examples/insect4.jpg" width="150">
+
+## Procedural Swords
+[Live Demo](https://dattasid.github.io/procsword.html)
+
+Created for Reddit's r/proceduralgeneration Procedural Weapon contest, This program creates swords with procedural blades and hilts. The blades can be a variety of shapes, and the hilts can have a variety of patterns. Curves sword were planned but could not be completed.
+
+<img src="examples/sword.svg" width="150"> <img src="examples/sword1.svg" width="150">
+<img src="examples/sword2.svg" width="150">
+<img src="examples/sword3.svg" width="150">
+<img src="examples/sword4.svg" width="150">
