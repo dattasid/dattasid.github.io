@@ -55,3 +55,23 @@ Created for Reddit's r/proceduralgeneration Procedural Weapon contest, This prog
 Simple rectangles or triangles with gradient. 
 
 <img src="examples/geomgrad1.PNG" width="150"> <img src="examples/geomgrad2.PNG" width="150">
+
+## Procedural Jewelry descriptions
+[Live Demo](https://dattasid.github.io/ProcJewelry.html) [Project](https://github.com/dattasid/ProcGrammar)
+
+Procedural jewelry descriptions. Created a rule based system for this as usual text replacement systems were not enough. This system allows rules to be fired based on previously chosen values in random generation. For example, if a person is wealthy their jewelry will be more elaborate and may contain expensive materials. For a ruler the program will generate a crown.
+
+Some examples:
+
+>Lagir is a fisherman. He is wearing a necklace.<br>
+>The necklace is a strand of straw shell beads. The copper pendant is engraved with an image of an ox and a temple.
+
+>Afuz o'Surepuje is a magician. She is wearing a necklace and two rings.<br>
+>The necklace is a strand of ruby beads. The pendant is engraved with alchemical symbols for earth, Mercury and amalgama.<br>
+>The ring is made of silver. On it are inscribed the alchemic symbols for Jupiter, water, mercury and Venus. It has a barely perceiptible black glow.<br>
+>The ring is made of silver. The centerpiece of the ring is a garnet. The piece has filigree and milgrain detail. It has a gloomy black glow.<br>
+
+>Yaroja h'Fadoyel is a ruler. He is wearing a crown, a ring and a necklace.<br>
+>The silver crown is adorned with 185 sapphires and emarlds. On it is inscribed the motto "Knowledge, Merit and Salvation".<br>
+>The ring is made of gold. The centerpiece of the ring is a sapphire. It is accented by twelve leaf shaped ambers and diamonds around it in a round shape. The piece has delicate filigree detail.<br>
+>The necklace is a strand of ruby beads. The pendant is set with ambers and diamonds.<br>
