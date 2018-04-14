@@ -15,6 +15,7 @@ Did it become art? Judge for yourself at the live demo!
 ## Procedural Cityscapes
 [Live Demo](https://dattasid.github.io/cityscape-1.html)
 
+Created for Reddit's r/proceduralgeneration Cityscape challenge, this program draws dark brooding (evil?) buildings against a moody evening sky. The building can be rectangular, or polygonal, with varying window light patterns.
 
 <img src="examples/city1.png" width="150"> <img src="examples/city2.png" width="150">
 <img src="examples/city3.png" width="150">
@@ -23,7 +24,7 @@ Did it become art? Judge for yourself at the live demo!
 ## Procedural Seascapes
 [Live Demo](https://dattasid.github.io/fish.html)
 
-Created for Reddit's r/proceduralgeneration Cityscape challenge, this program draws dark brooding (evil?) buildings against a moody evening sky. The building can be rectangular, or polygonal, with varying window light patterns.
+Created for Reddit's r/proceduralgeneration Seascape challenge, this program draws a coral reef and procedural fish with a pixel art aethetic.
 
 <img src="examples/fish1.png" width="150"> <img src="examples/fish2.png" width="150">
 <img src="examples/fish3.png" width="150">
