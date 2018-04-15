@@ -57,7 +57,9 @@ Simple rectangles or triangles with gradient.
 <img src="examples/geomgrad1.PNG" width="150"> <img src="examples/geomgrad2.PNG" width="150">
 
 ## Procedural Jewelry descriptions
-[Live Demo](https://dattasid.github.io/ProcJewelry.html) [Project](https://github.com/dattasid/ProcGrammar)
+[Live Demo](https://dattasid.github.io/ProcJewelry.html)
+
+[Project Page](https://github.com/dattasid/ProcGrammar)
 
 Procedural jewelry descriptions. Created a rule based system for this as usual text replacement systems were not enough. This system allows rules to be fired based on previously chosen values in random generation. For example, if a person is wealthy their jewelry will be more elaborate and may contain expensive materials. For a ruler the program will generate a crown.
 
