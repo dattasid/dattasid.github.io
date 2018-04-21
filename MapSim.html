@@ -1,0 +1,655 @@
+<html>
+<style type="text/css">
+    body {
+        color: red;
+        background: black;
+    }
+
+    input[type="text"],input[type="number"] {
+        font-family: Courier New, Courier, monospace;
+        /* font-size: 120%; */
+        font-weight: bold;
+        color:white;
+        background-color: rgba(0, 0, 0, 0);
+        /* opacity: .6; */
+    }
+    label {
+        color: white;
+        font-weight: bold;
+        padding: .5em;
+        opacity: .7;
+    }
+    label.color_choose
+    {
+        font-size: 70%;
+    }
+
+    input[type="radio"][name="color"] {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    
+    input[type="radio"]:hover + label {
+        border: 1px solid white;
+        opacity: 1;
+    }
+    
+
+    input[type="radio"]:checked+label.color_choose {
+        opacity: 1;
+        /*border: 1px solid white; */
+        background: gray;
+    }
+
+    #options_outer {
+        position:absolute;
+        left:5px;
+        width: 30em;
+        /*height: 50em;*/
+        height: 90%;
+
+        top: 2em;
+
+        padding: .5em;
+        overflow: auto; 
+
+        /* border-color: ; */
+        border: 2px solid rgba(128, 128, 128, 0.8);
+        background-color: rgba(0, 0, 0, .6);
+
+    }
+    #options_outer::-webkit-scrollbar
+    {
+        width: 5px;
+    }
+    #options_outer::-webkit-scrollbar-thumb {
+        background-color: darkgrey;
+        outline: 1px solid slategrey;
+    }
+    #options_outer::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 6px rgba(1,1,1,0.3);
+    }
+    #options_inner {
+        position:relative;
+        height:auto;
+
+
+        color: #fff;
+
+        display:grid;
+        grid-template-columns: 30% 65% 5%;
+        /* grid-template-rows: 3em 3em 3em; */
+        grid-gap: none;
+    }
+    #options_inner input
+    {
+        margin: 10px;
+        margin-left: 1px;
+    }
+
+    #options_inner label {
+        padding: 0;
+        margin: 0;
+        margin-top: .3em;
+
+        opacity: 1;
+    }
+    .arrow-down {
+        display: inline-block;
+        width: 0; 
+        height: 0; 
+        border-left: 7px solid transparent;
+        border-right: 7px solid transparent;
+
+        border-top: 14px solid white;
+    }
+
+    .arrow-right {
+        display:inline-block;
+        width: 0; 
+        height: 0; 
+        border-top: 7px solid transparent;
+        border-bottom: 7px solid transparent;
+
+        border-left:14px solid white;
+    }
+
+    #optionButton {
+        border-width: 1px;
+        font-weight: bold;
+        background-color: #000;
+        color: #fff;
+    }
+
+
+
+    .hint{
+        /* margin: 20%;
+        margin-top:40%;
+        margin-bottom:40%; */
+        margin-top: .9em;
+        width: .7em;
+        height: 1.5em;
+        background-color: #888;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .climate_opts{
+        grid-column: 1/ -1;
+
+        border: 1px solid white;
+
+        display:grid;
+        grid-template-columns: 30% 65% 5%;
+        /* grid-template-rows: 3em 3em 3em; */
+        grid-gap: none;
+    }
+    
+    button.action {
+        grid-column: 1/span 2;
+        font-weight: bold;
+        margin: 15px;
+    }
+    button.action:hover {
+        background-color: #aaa;
+    }
+    .random_seed {
+        display:grid;
+        grid-template-columns: 2fr 1fr;
+    }
+    button.randomize {
+        margin: .5em;
+    }
+    .instructions {
+        font-size: 80%;
+        color: #ccc;
+    }
+    
+    .suboption
+    {
+        margin-left: 2em !important;
+        font-size:80%;
+    }
+    .suboption2 {
+        font-size:80%;
+    }
+
+    button.download {
+        background-color: #333;
+        border: 2px solid #444;
+        color: #fff;
+        /* margin: 15px; */
+    }
+    button.download:hover {
+        background-color: #aaa;
+    }
+
+    .line2 {
+        margin-left: 7em;
+        font-size: 80%;
+    }
+    /*
+.xy
+{
+fill:red;
+stroke:white;
+stroke-width:5;
+opacity:1
+}
+*/
+</style>
+<script>
+    function downloadPNG() {
+
+        //document.getElementById("downloader").download = "?.png";
+        document.getElementById("downloader").href = document.getElementById("canvas2").toDataURL("image/png").replace(/^data:image\/[^;]/, 'data:application/octet-stream');
+        console.log(document.getElementById("downloader").href)
+    }
+
+    function drawOnCanvas(svgdata) {
+
+        var canvas = document.getElementById('canvas2');
+        var ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = true;
+
+        var DOMURL = window.URL || window.webkitURL || window;
+
+        var img = new Image();
+        var svg = new Blob([svgdata], { type: 'image/svg+xml' });
+        var url = DOMURL.createObjectURL(svg);
+
+        img.onload = function () {
+            ctx.drawImage(img, 0, 0);
+            DOMURL.revokeObjectURL(url);
+        }
+
+        img.src = url;
+    }
+
+    function setupSVGSave(svgstr, type) {
+        var a = document.getElementById("saveSVG");
+        var file = new Blob([svgstr], { type: 'image/svg+xml' });
+        a['href'] = URL.createObjectURL(file);
+        a['download'] = 'Map_'+type+'.svg';
+    }
+
+function toggleHide(id) {
+    var x = document.getElementById(id);
+    if (x.style.display === "none") {
+        x.style.display = "block";
+    } else {
+        x.style.display = "none";
+    }
+}
+
+function toggleOptions()
+{
+    var x = document.getElementById('options_outer');
+    var btn = document.getElementById('optionG');
+    if (x.style.display === "none") {
+        x.style.display = "grid";
+        btn.className='arrow-down'
+        // btn.classList.remove('arrow-right')
+        // btn.classList.add('arrow-down')
+    } else {
+        x.style.display = "none";
+        btn.className='arrow-right'
+        // btn.classList.add('arrow-down')
+        // btn.classList.removeadd('arrow-right')
+    }
+}
+
+function setHide(id)
+{
+    var elems = document.getElementsByClassName('climate_opts');
+    for (elem of elems)
+    {
+        if (elem.id == id) {
+            elem.style.display = "grid";
+        } else {
+            elem.style.display = "none";
+        }
+    }
+}
+function setOptsVisible(c_parent, c_toshow)
+{
+    var elems = document.getElementsByClassName(c_parent);
+    console.log(elems)
+    for (elem of elems)
+    {
+        if (elem.classList.contains(c_toshow)) {
+            elem.style.display = "contents";
+            console.log("aaaa")
+        } else {
+            elem.style.display = "none";
+        }
+    }
+}
+
+function setInputValue(id, val)
+{
+    var e = document.getElementById(id);
+    if (e) e.value = val
+}
+
+function toggleRivers()
+{
+    var e = document.getElementById('rivers');
+    if (e)
+    {
+        if (e.style.visibility == 'hidden')
+            e.style.visibility = 'visible'
+        else
+            e.style.visibility = 'hidden'
+    }
+}
+</script>
+
+<body>
+<p>
+        <div id="optionG" class="arrow-down" onclick="toggleOptions()"></div>
+        <button id="optionButton" onclick="toggleOptions()">Options</button>
+
+        <input type="radio" id="plates" name="color" onclick="plateColor()">
+        <label for="plates" class="color_choose">Plates</label>
+
+        <input type="radio" id="heights" name="color" onclick="heightColor()">
+        <label for="heights" class="color_choose">Heights</label>
+
+        <input type="radio" id="biome" name="color" onclick="biomeColor()">
+        <label for="biome" class="color_choose">Biome</label>
+
+        <input type="radio" id="temperature" name="color" onclick="tempColor('temp')">
+        <label for="temperature" class="color_choose">Temperature</label>
+
+        <input type="radio" id="precip" name="color" onclick="tempColor('precip')">
+        <label for="precip" class="color_choose">Precipitation</label>
+</p>
+<p class="line2">
+    <input type="checkbox" id="show_rivers" checked onclick="toggleRivers()">
+    <label for="show_rivers" >Show Rivers</label>
+</p>
+<div id="options_outer">
+  <div id="options_inner">
+    <span class="instructions" style="grid-column: 1/span 3;">Press 'o' to open/close the options menu.</span>
+    <label>Seed</label>
+        <span class="random_seed">
+            <input id="PLATE_SEED" type="text"/>
+            <button id="plate_seed_button" class="randomize">Randomize</button>
+        </span>
+    <button class="hint">?</button>
+    <label>Num sites/Detail</label><input id="NSITES" type="number" min="100" max="50000" step="500" value="10000"/>
+        <button class="hint" onclick="alert('.')">?</button>
+    <label class="suboption">Num Lloyd's relax</label><input id="LLOYD_COUNT" type="number" min="0" max="5" step="1" value="2"/>
+        <button class="hint" onclick="alert('.')">?</button>
+    <label>Number of plates</label><input id="NPLATES" type="number" min="5" max="5000" step="10" value="70"/>
+        <button class="hint" onclick="alert('The world is made up of discrete areas called plates.\n Entire plates can be land or sea.')">?</button>
+    <label>Chance of land plate</label><input id="LAND_PLATE_CHANCE" type="number" min="0" max="1" step=".1" value=".3"/>
+        <button class="hint" onclick="">?</button>
+    <label>Mountain Chance</label><input id="MOUNTAIN_CHANCE" type="number" min="0" max="1" step=".1" value=".15"/>
+        <button class="hint" onclick="">?</button>
+    <label>Island Chance</label><input id="ISLAND_CHANCE" type="number" min="0" max="1" step=".1" value=".15"/>
+        <button class="hint" onclick="">?</button>
+    <label class="suboption">Island density</label><input id="ISLAND_DENSITY" type="number" min="0" max="1" step=".1" value=".3"/>
+        <button class="hint" onclick="">?</button>
+    
+    <label>Mountain Height</label>
+        <span><label class="suboption2" title="">Max</label>
+            <input id="MT_HT" type="number" min="0" max="2" step=".1" value="1"/>
+            <label class="suboption2" title="Variation between individual peaks of a chain">Variance</label>
+            <input id="MT_HT_VAR" type="number" min="0" max="1" step=".1" value=".5"/>
+            <label class="suboption2" title="After smoothing, max height of a mountain can only be 1.">*</label>
+        </span>
+        <button class="hint" onclick="">?</button>
+    <label>Plateau Height</label>
+        <span><label class="suboption2" title="">Max</label>
+            <input id="PLATEAU_HT" type="number" min="0" max="1" step=".05" value=".6"/>
+            <label class="suboption2" title="Variation between lowest and tallest points of a plateau.">Variance</label>
+            <input id="PLATEAU_HT_VAR" type="number" min="0" max="1" step=".1" value=".5"/>
+        </span>
+        <button class="hint" onclick="">?</button>
+    <label>Plate warp</label>
+    <span><label title="Warp noise amplitude" class="suboption2">Amt</label>
+        <input id="PLATE_PERTURB_AMP" type="number" min="0" max="1" step=".05" value=".05"/>
+        <label class="suboption2" title="Warp noise frequency">Freq</label>
+        <input id="PLATE_PERTURB_FREQ" type="number" min="1" max="100" step="1" value="15"/>
+        <label class="suboption2" title="Warp noise Octaves">Octv</label>
+        <input id="PLATE_PERTURB_OCT" type="number" min="1" max="8" step="1" value="2"/>
+    </span><button class="hint" onclick="">?</button>
+    <label>Height Smoothing</label>
+    <span><label class="suboption2" title="Change fraction per iteration">Amount</label>
+        <input id="HT_SMOOTH" type="number" min="0" max="1" step=".1" value=".2" style="width:6em;"/>
+        <label class="suboption2" title="Number of smoothing iterations">Times</label>
+        <input id="HT_SMOOTH_TIMES" type="number" min="1" max="20" step="1" value="2"/>
+    </span>
+    <button class="hint" onclick="">?</button>
+
+    <button id="terrain_action" class="action" onclick="terrainAction()">
+        Generate Terrain</button><div></div>
+
+    <label>Climate Simulation</label>
+
+    <span>
+        <span><input type="radio" id="CLIM_SIM_RND" name="CLIM_SIM" checked onclick="setHide('climate_rand')">
+        <label for="rnd">Random</label></span>
+        <span><input type="radio" disabled id="CLIM_SIM_SIM" name="CLIM_SIM" onclick="setHide('climate_sim')">
+        <label disabled for="act">Simulation (TBD)</label></span>
+    </span>
+    <span></span>
+
+    <div id="climate_rand" class="climate_opts">
+        <label>Seed</label>
+        <span class="random_seed">
+            <input id="CLIMATE_SEED" type="text"/>
+            <button class="randomize">Randomize</button>
+        </span>
+        <button class="hint" onclick="">?</button>
+
+        <label >Temp Adjust</label>
+        <span>
+            <label class="suboption2" >Cold&lt;</label>
+            <input type="range" min="-1" max="1" value="0" step=".1" id="T_ADJUST_RANGE" oninput="setInputValue('T_ADJUST', this.value)"/>
+            <input type="number" min="-1" max="1" value="0" step=".1" id="T_ADJUST" oninput="setInputValue('T_ADJUST_RANGE', this.value)"/>
+            <label class="suboption2" >&gt;Hot</label>
+        </span>
+        <button class="hint" onclick="">?</button>
+        <label >Precipitaton Adj</label>
+        <span>
+            <label class="suboption2" >Dry&lt;</label>
+            <input type="range" min="-1" max="1" value="0" step=".1" id="P_ADJUST_RANGE" oninput="setInputValue('P_ADJUST', this.value)"/>
+            <input type="number" min="-1" max="1" value="0" step=".1" id="P_ADJUST" oninput="setInputValue('P_ADJUST_RANGE', this.value)"/>
+            <label class="suboption2" >&gt;Wet</label>
+        </span>
+        <button class="hint" onclick="">?</button>
+
+        <label class="suboption">T falloff with height(/10km)</label>
+        <input id="T_HT_FACTOR" type="number" min="0" max="1.5" step=".1" value="1"/>
+        <button class="hint" onclick="">?</button>
+    
+        <label>Temperature</label>
+        <span>
+            <input type="radio" id="RAND_T_LAT" name="RAND_T_METHOD" checked onclick="setOptsVisible('t_opts', 't_opts_lat')">
+            <label for="RAND_T_LAT" class="suboption2">Equator hot Poles cold</label>
+            <input type="radio" id="RAND_T_RAND" name="RAND_T_METHOD" onclick="setOptsVisible('t_opts', 't_opts_rand')">
+            <label for="RAND_T_RAND" class="suboption2">Random</label></span>
+        </span>
+        <button class="hint" onclick="">?</button>
+
+        <span style="display:contents" class="t_opts t_opts_lat">
+            <label class="suboption">T falloff with Lat</label>
+            <input id="T_LAT_ADJ" type="number" min=".1" max="1.5" step=".1" value=".9"/>
+            <button class="hint" onclick="">?</button>
+        </span>
+        <span style="display:none" class="t_opts t_opts_rand">
+            <label class="suboption">T Random params</label>
+            <span>
+                <label class="suboption2" title="noise frequency">Freq</label>
+                <input id="T_RAND_FREQ" type="number" min="1" max="100" step="1" value="4"/>
+                <label class="suboption2" title="noise Octaves">Octv</label>
+                <input id="T_RAND_OCT" type="number" min="1" max="8" step="1" value="2"/>
+            </span>
+            <button class="hint" onclick="">?</button>
+        </span>
+
+        <label >Precipitation</label>
+        <span>
+            <label class="suboption2" title="noise frequency">Freq</label>
+            <input id="P_RAND_FREQ" type="number" min="1" max="100" step="1" value="4"/>
+            <label class="suboption2" title="noise Octaves">Octv</label>
+            <input id="P_RAND_OCT" type="number" min="1" max="8" step="1" value="2"/>
+        </span>
+        <button class="hint" onclick="">?</button>
+
+        <button id="climate_action" class="action" onclick="climateAction()">Create Random Climate</button>
+    </div>
+
+    <div id="climate_sim" style="display: none;" class="climate_opts">
+        <label>Not implemented yet</label><input type="number" min="0" max="1" step=".1" value=".15"/>
+        <button class="hint" onclick="">?</button>
+        <button id="climate_sim_action" class="action" onclick="">Simulate Climate (Not implemented)</button><span/><span/>
+    </div>
+    <div style="height:100px;">&nbsp;</div><div></div><div></div>
+    <div>&nbsp;</div><div></div><div></div>
+    <div>&nbsp;</div><div></div><div></div>
+    <div></div><div></div><div></div>
+  </div> <!-- #options_inner -->
+</div> <!-- #options_outer -->
+    <!--svg width="800" height="800" id="canvas">
+</svg-->
+
+    <!-- target for the SVG -->
+    <!--div id="canvas"></div-->
+    <span id="canvas">
+        <svg width="800" height="600">
+        </svg>
+    </span>
+
+    <!--canvas id="canvas2" style="border:2px solid black;" width="1000" height="600">
+</canvas-->
+
+
+    <br/>
+
+    <!--a href="#" id="downloader" download="underwater.png">
+        <button type="button" class="download" onclick="downloadPNG()">Download PNG</button>
+    </a-->
+
+    <a href="#" id="saveSVG" download="underwater.svg">
+        <button class="download" type="button">Download SVG</button>
+    </a>
+    <span class="instructions" style="margin-left: 5em;">Click and drag to move, scroll to zoom/unzoom.</span>
+    <p id="footer" style="font-size:80%; color:white;">(C) Sid Datta. Downloaded image may be considered under Creative Commons with Attribution.</p>
+</body>
+<script>
+// Load field values if we can
+{
+    var inputs = document.getElementsByTagName("input");
+    var anyRead = true
+    for (var input of inputs)
+    {
+        if ((input.type == 'text' || input.type == 'number')
+            && input.id)
+        {
+            if (window.localStorage)
+            {
+                let v = window.localStorage.getItem(input.id);
+                if (v)
+                {
+                    input.value = v;
+                    anyRead = true
+                    // console.log(input.id, input.onchange)
+                    // if (input.onchange)
+                    //     input.onchange()
+                }
+            }
+        }
+        else if (input.type == 'radio' && input.name != 'color')
+            // Color is the map chooser tabs
+        {
+            if (window.localStorage)
+            {
+                let v = window.localStorage.getItem(input.name);
+
+                if (v == input.id)
+                {
+                    input.checked = true
+                    // console.log("~~~", v, input.onclick, input.class)
+                    if (input.onclick) input.onclick();
+                }
+                
+            }
+        }
+    }
+    // NOTE: Seeds overwritten later
+    if (anyRead)
+        console.log("Input values loaded from localStorage.")
+}
+
+// Put random seeds in seed fields
+var rand_btns = document.getElementsByClassName('randomize');
+for (var btn of rand_btns)
+{
+    var inp = btn.previousSibling.previousSibling;
+    // console.log(btn,inp)
+    // inp.value = "Hello"
+
+    btn.onclick = function() {// IIF to get a context :)
+
+        var inp1 = inp;
+        return function() {
+            var v = Math.floor(Math.random() * 99999999);
+            inp1.value = v
+        }
+    }()
+
+    inp.value = "Type Anything! "+Math.floor(Math.random() * 9999);
+    // localStorage.clear()
+}
+
+
+</script>
+<script data-main="MapSim" src="require.js"></script>
+<script>
+function readParams(ctx)
+{
+    var inputs = document.getElementsByTagName("input");
+    for (var input of inputs)
+    {
+        if ((input.type == 'text' || input.type == 'number')
+            && input.id)
+        {
+            ctx[input.id] = input.value;
+
+            if (window.localStorage && input.id.indexOf("SEED")==-1)
+            {
+                window.localStorage.setItem(input.id, input.value)
+            }
+        }
+        else if (input.type === 'radio' && input.checked)
+        {
+            ctx[input.name] = input.id
+
+            if (window.localStorage)
+            {
+                window.localStorage.setItem(input.name, input.id)
+            }
+        }
+
+
+    }
+}
+function terrainAction()
+{
+    var ctx = {};
+    readParams(ctx)
+
+    console.log(ctx)
+    window.generateTerrain(ctx);
+    window.generateClimate(ctx);
+
+    document.getElementById("biome").click()
+    
+}
+
+function climateAction()
+{
+    if (!window["sites"])
+    {
+        alert("Terrain not generated yet");
+        return
+    }
+
+    var ctx = {};
+    readParams(ctx)
+
+    console.log(ctx)
+    
+    window.generateClimate(ctx);
+
+    document.getElementById("biome").click()
+    
+}
+// terrainAction();//SID_DEBUG
+
+// Stop recreate on escape
+window.addEventListener('keydown', function(e){
+    if(e.key=='o'){
+        toggleOptions();
+        return true;
+    }
+    else if (e.key=='g'){
+        terrainAction();
+        return true;
+    }
+    else if (e.key == 'r')
+    {
+        document.getElementById('plate_seed_button').click()
+    }
+}, true);
+</script>
+</html>
