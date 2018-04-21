@@ -1,5 +1,10 @@
 # Sid's Procedural Artwork projects
 
+## Fantasy Map Generator
+[Live Demo](https://dattasid.github.io/MapSim.html)
+
+<img src="https://raw.githubusercontent.com/dattasid/MapSim/master/examples/map1.PNG"/>
+
 ## Procedural Rectangular Abstract art
 [Live Demo](https://dattasid.github.io/rects_div.html)
 
