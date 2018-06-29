@@ -9,10 +9,10 @@
 
 [Live demo](https://dattasid.github.io/flowers/flowers.html)
 
-<img width="400" src="https://raw.githubusercontent.com/dattasid/ProcFlower/master/examples/f8.png"></img>
-<img width="400" src="https://raw.githubusercontent.com/dattasid/ProcFlower/master/examples/f3.png"></img>
-<img width="400" src="https://raw.githubusercontent.com/dattasid/ProcFlower/master/examples/f1.png"></img>
-<img width="400" src="https://raw.githubusercontent.com/dattasid/ProcFlower/master/examples/f2.png"></img>
+<img width="400" src="https://raw.githubusercontent.com/dattasid/ProcFlower/master/examples/f8.png">
+<img width="400" src="https://raw.githubusercontent.com/dattasid/ProcFlower/master/examples/f3.png">
+<img width="400" src="https://raw.githubusercontent.com/dattasid/ProcFlower/master/examples/f1.png">
+<img width="400" src="https://raw.githubusercontent.com/dattasid/ProcFlower/master/examples/f2.png">
 
 ## Procedural Rectangular Abstract art
 [Live Demo](https://dattasid.github.io/rects_div.html)
