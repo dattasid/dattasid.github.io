@@ -9,7 +9,7 @@
 
 [Live demo](https://dattasid.github.io/flowers/flowers.html)
 
-<img width="400" src="https://raw.githubusercontent.com/dattasid/ProcFlower/master/examples/f8.png">
+<a href="https://raw.githubusercontent.com/dattasid/ProcFlower/master/examples/f8.png"><img width="400" src="https://raw.githubusercontent.com/dattasid/ProcFlower/master/examples/f8.png"></a>
 <img width="400" src="https://raw.githubusercontent.com/dattasid/ProcFlower/master/examples/f3.png">
 <img width="400" src="https://raw.githubusercontent.com/dattasid/ProcFlower/master/examples/f1.png">
 <img width="400" src="https://raw.githubusercontent.com/dattasid/ProcFlower/master/examples/f2.png">
