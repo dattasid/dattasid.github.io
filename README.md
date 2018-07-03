@@ -10,9 +10,9 @@
 [Live demo](https://dattasid.github.io/flowers/flowers.html)
 
 <a href="https://raw.githubusercontent.com/dattasid/ProcFlower/master/examples/f8.png"><img width="400" src="https://raw.githubusercontent.com/dattasid/ProcFlower/master/examples/f8.png"></a>
-<img width="400" src="https://raw.githubusercontent.com/dattasid/ProcFlower/master/examples/f3.png">
-<img width="400" src="https://raw.githubusercontent.com/dattasid/ProcFlower/master/examples/f1.png">
-<img width="400" src="https://raw.githubusercontent.com/dattasid/ProcFlower/master/examples/f2.png">
+<a href="https://raw.githubusercontent.com/dattasid/ProcFlower/master/examples/f3.png"><img width="400" src="https://raw.githubusercontent.com/dattasid/ProcFlower/master/examples/f3.png"></a>
+<a href="https://raw.githubusercontent.com/dattasid/ProcFlower/master/examples/f1.png"><img width="400" src="https://raw.githubusercontent.com/dattasid/ProcFlower/master/examples/f1.png"></a>
+<a href="https://raw.githubusercontent.com/dattasid/ProcFlower/master/examples/f2.png"><img width="400" src="https://raw.githubusercontent.com/dattasid/ProcFlower/master/examples/f2.png"></a>?
 
 ## Procedural Rectangular Abstract art
 [Live Demo](https://dattasid.github.io/rects_div.html)
@@ -21,54 +21,60 @@ This was an experiment in generating procedural art, that was random yet that hu
 
 Did it become art? Judge for yourself at the live demo!
 
-<img src="examples/rect1.png" width="150"> <img src="examples/rect2.png" width="150">
-<img src="examples/rect3.png" width="150">
-<img src="examples/rect4.png" width="150">
-<img src="examples/rect5.png" width="150">
+<a href="examples/rect1.png"><img src="examples/rect1.png" width="150"></a> 
+<a href="examples/rect2.png"><img src="examples/rect2.png" width="150"></a>
+<a href="examples/rect3.png"><img src="examples/rect3.png" width="150"></a>
+<a href="examples/rect4.png"><img src="examples/rect4.png" width="150"></a>
+<a href="examples/rect5.png"><img src="examples/rect5.png" width="150"></a>
 
 ## Procedural Cityscapes
 [Live Demo](https://dattasid.github.io/cityscape-1.html)
 
 Created for Reddit's r/proceduralgeneration Cityscape challenge, this program draws dark brooding (evil?) buildings against a moody evening sky. The building can be rectangular, or polygonal, with varying window light patterns.
 
-<img src="examples/city1.png" width="150"> <img src="examples/city2.png" width="150">
-<img src="examples/city3.png" width="150">
-<img src="examples/city4.png" width="150">
+<a href="examples/city1.png"><img src="examples/city1.png" width="150"></a>
+<a href="examples/city2.png"><img src="examples/city2.png" width="150"></a>
+<a href="examples/city3.png"><img src="examples/city3.png" width="150"></a>
+<a href="examples/city4.png"><img src="examples/city4.png" width="150"></a>
 
 ## Procedural Seascapes
 [Live Demo](https://dattasid.github.io/fish.html)
 
 Created for Reddit's r/proceduralgeneration Seascape challenge, this program draws a coral reef and procedural fish with a pixel art aethetic.
 
-<img src="examples/fish1.png" width="150"> <img src="examples/fish2.png" width="150">
-<img src="examples/fish3.png" width="150">
-<img src="examples/fish4.png" width="150">
+<a href="examples/fish1.png"><img src="examples/fish1.png" width="150"></a>
+<a href="examples/fish2.png"><img src="examples/fish2.png" width="150"></a>
+<a href="examples/fish3.png"><img src="examples/fish3.png" width="150"></a>
+<a href="examples/fish4.png"><img src="examples/fish4.png" width="150"></a>
 
 ## Procedural insects
 [Live Demo](https://dattasid.github.io/ProcInsect.html)
 
 Created for Reddit's r/proceduralgeneration Procedural Creature challenge, this program creates insects with segmented body, legs and antenna. The body segments will have the familiar spiky squiggly edges that we love to hate. The body segments should appear very similar to each other in spite of varying in legth and width, so that the whole insect appears one consistent creature.
 
-<img src="examples/insect1.jpg" width="150"> <img src="examples/insect2.jpg" width="150">
-<img src="examples/insect3.jpg" width="150">
-<img src="examples/insect4.jpg" width="150">
+<a href="examples/insect1.jpg"><img src="examples/insect1.jpg" width="150"></a> 
+<a href="examples/insect2.jpg"><img src="examples/insect2.jpg" width="150"></a>
+<a href="examples/insect3.jpg"><img src="examples/insect3.jpg" width="150"></a>
+<a href="examples/insect4.jpg"><img src="examples/insect4.jpg" width="150"></a>
 
 ## Procedural Swords
 [Live Demo](https://dattasid.github.io/procsword.html)
 
 Created for Reddit's r/proceduralgeneration Procedural Weapon contest, This program creates swords with procedural blades and hilts. The blades can be a variety of shapes, and the hilts can have a variety of patterns. Curves sword were planned but could not be completed.
 
-<img src="examples/sword.svg" width="150"> <img src="examples/sword1.svg" width="150">
-<img src="examples/sword2.svg" width="150">
-<img src="examples/sword3.svg" width="150">
-<img src="examples/sword4.svg" width="150">
+<a href="examples/sword.svg"><img src="examples/sword.svg" width="150"></a> 
+<a href="examples/sword1.svg"><img src="examples/sword1.svg" width="150"></a>
+<a href="examples/sword2.svg"><img src="examples/sword2.svg" width="150"></a>
+<a href="examples/sword3.svg"><img src="examples/sword3.svg" width="150"></a>
+<a href="examples/sword4.svg"><img src="examples/sword4.svg" width="150"></a>
 
 ## Geometric shapes
 [Live Demo](https://dattasid.github.io/geom-design-1.html)
 
 Simple rectangles or triangles with gradient. 
 
-<img src="examples/geomgrad1.PNG" width="150"> <img src="examples/geomgrad2.PNG" width="150">
+<a href="examples/geomgrad1.PNG"><img src="examples/geomgrad1.PNG" width="150"></a> 
+<a href="examples/geomgrad2.PNG"><img src="examples/geomgrad2.PNG" width="150"></a>
 
 ## Procedural Jewelry descriptions
 [Live Demo](https://dattasid.github.io/ProcJewelry.html)
