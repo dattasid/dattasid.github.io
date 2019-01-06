@@ -1,13 +1,22 @@
 # Sid's Procedural Artwork projects
+Procedural Generation is making computer programs that create images or music. The program chooses randomly what to create, thus creating things that were not envisioned by the programmer. I create these programs to take care of my artistic urge, as I cannot draw but I can code.
+Any live demos have only been tested on the Chrome browser.
 
 ## Fantasy Map Generator
 [Live Demo](https://dattasid.github.io/MapSim.html)
 
+Creates a random world out of voronoi tesselation of a rectangle. Right now it creates mountains and seas similar to the result of plate techtonics and assigns them biome. The point of creating voronoi polygons is that eventually the map will be used for economic and political simulations.
+
+See a [Live Demo](https://dattasid.github.io/MapSim.html). The map has 10k or more SVG polygons and clicking and dragging may be slow. But the demo works on phones too.
+
 <img src="https://raw.githubusercontent.com/dattasid/MapSim/master/examples/map1.PNG"/>
 
 ## Procedural Wildflowers
-
 [Live demo](https://dattasid.github.io/flowers/flowers.html)
+
+I dont have a backyard, so I created a virtual garden that shows a new garden with new plants and flowers every time.
+
+See a [Live demo](https://dattasid.github.io/flowers/flowers.html). Sadly, this demo does not run on phones.
 
 <a href="https://raw.githubusercontent.com/dattasid/ProcFlower/master/examples/f8.png"><img width="400" src="https://raw.githubusercontent.com/dattasid/ProcFlower/master/examples/f8.png"></a>
 <a href="https://raw.githubusercontent.com/dattasid/ProcFlower/master/examples/f3.png"><img width="400" src="https://raw.githubusercontent.com/dattasid/ProcFlower/master/examples/f3.png"></a>
@@ -19,7 +28,7 @@
 
 This was an experiment in generating procedural art, that was random yet that humans would find them interesting. My theory was that images that contain patterns, repetition and symmetry would capture human attention. Hence this program randomly subdivides rectangles, and assigns them color. Sometimes the two subdivisions are copies of each other, adding repetition. Sometimes they are mirrors of each other, adding symmetry. Sometimes, the program will introduce "errors" in the copy, hopefully making it interesting.
 
-Did it become art? Judge for yourself at the live demo!
+Did it become art? Judge for yourself at the [live demo!](https://dattasid.github.io/rects_div.html)
 
 <a href="examples/rect1.png"><img src="examples/rect1.png" width="150"></a> 
 <a href="examples/rect2.png"><img src="examples/rect2.png" width="150"></a>
