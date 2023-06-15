@@ -1,0 +1,110 @@
+<html>
+<style>body {
+  background-color: black;
+  color: #ddd;
+}
+
+@keyframes dance {
+  0% {
+    rotate: -20deg;
+    /* animation-timing-function: ease-out;  */
+  }
+  100% {
+    rotate: 20deg;
+    /* animation-timing-function: ease-in;  */
+  }
+}
+
+
+@keyframes roam2 {
+  0% {margin-left: 0%;}
+
+  10% {margin-left: 20%;}
+  20% {margin-left: 20%;}
+
+  45% {margin-left: 100%;}
+  55% {margin-left: 100%;}
+
+  60% {margin-left: 80%;}
+  70% {margin-left: 80%;}
+
+  96% {margin-left: 0%;}
+  100% {margin-left: 0%;}
+}
+
+.float {
+  position:absolute;
+  width:100%;
+
+  /* left:100;
+  top:150; */
+
+}
+
+
+.roaming {
+  animation: roam2;
+  animation-duration: 30s;
+  animation-iteration-count: infinite;
+  /* animation-direction: alternate; */
+  animation-timing-function: linear;
+}
+.dancing {
+  animation: dance;
+  animation-duration: .4s;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  animation-timing-function: linear;
+}
+
+.box {
+  /* border: 1px solid white; */
+}
+
+#main {
+  border: 1px solid grey;
+  border-radius: 1em;
+}
+.message {
+  font-size: 300%;
+}
+.inp {
+  font-size: 300%;
+}
+.go {
+  font-size: 300%;
+}
+.suc {
+  font-size: 300%;
+  color: rgb(70, 255, 70);
+}
+.fail {
+  font-size: 300%;
+  color: yellow;
+}</style>
+<head></head>
+<body>
+  <div id="main"></div>
+<!-- <img src="./other/animals/pig.png"/> -->
+
+<!--
+<p id="footer" style="font-size:80%; color:white;">(C) Sid Datta. Downloaded image may be considered under Creative Commons with Attribution.</p>
+-->
+<span id="debug"></span>
+</body>
+
+<!--
+
+<script src="incremental_1.ts"></script>
+<script src="cultiv_g2.ts"></script>
+<script src="god_g_ui.ts"></script>
+
+
+<link rel="stylesheet" href="god_ui.css" />
+-->
+<script src="add.f2939efd.js"></script>
+
+<!-- link rel="stylesheet" href="ui2.css" / -->
+
+
+</html>
