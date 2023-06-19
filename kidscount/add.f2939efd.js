@@ -227,7 +227,7 @@ function addAnimal(animal) {
   var _a;
   var d1 = document.createElement("div");
   d1.classList.add("float", "box");
-  var top = rand.nextInt(100, 400);
+  var top = rand.nextInt(100, 700);
   d1.style.top = top + "px";
   d1.style.left = "100px";
   d1.style.width = "50%";
@@ -267,7 +267,7 @@ function cleanup() {
 }
 function newGame() {
   cleanup();
-  var count = rand.nextInt(1, 5);
+  var count = rand.nextInt(1, 10);
   var all_animals = Object.keys(ANIMALS);
   var this_anim = rand.pick(all_animals);
   for (var i = 0; i < count; i++) addAnimal(ANIMALS[this_anim]);
