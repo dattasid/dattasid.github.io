@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animal Math Worksheet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Emoji&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .worksheet {
+            display: flex;
+            justify-content: space-between;
+        }
+        .column {
+            width: 48%;
+        }
+        .problem {
+            margin-bottom: 30px;
+        }
+        .emoji-line {
+            font-size: 24px;
+            line-height: 1.5;
+            text-align: right;
+        }
+        .answer-line {
+            border-top: 1px solid #000;
+            height: 30px;
+        }
+        .printable .emoji-line {
+            font-family: 'Noto Emoji', sans-serif;
+        }
+        #controls {
+            margin-bottom: 20px;
+        }
+        @media print {
+            #controls {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="controls">
+        <h1>Animal Math Worksheet</h1>
+        <button onclick="generateWorksheet()">Generate New Worksheet</button>
+        <label>
+            <input type="checkbox" id="printable" onchange="togglePrintable()"> Printable
+        </label>
+        <button onclick="generatePDF()">Download as PDF</button>
+    </div>
+    <div id="worksheet-container">
+        <div class="worksheet" id="worksheet"></div>
+    </div>
+
+    <script>
+        const animals = [
+            {emoji: '🐶', name: 'dogs'},
+            {emoji: '🐱', name: 'cats'},
+            {emoji: '🐭', name: 'mice'},
+            {emoji: '🐹', name: 'hamsters'},
+            {emoji: '🐰', name: 'rabbits'},
+            {emoji: '🦊', name: 'foxes'},
+            {emoji: '🐻', name: 'bears'},
+            {emoji: '🐼', name: 'pandas'},
+            {emoji: '🐨', name: 'koalas'},
+            {emoji: '🐯', name: 'tigers'},
+            {emoji: '🦁', name: 'lions'},
+            {emoji: '🐮', name: 'cows'},
+            {emoji: '🐷', name: 'pigs'},
+            {emoji: '🐸', name: 'frogs'},
+            {emoji: '🐙', name: 'octopuses'},
+            {emoji: '🐵', name: 'monkeys'},
+            {emoji: '🦄', name: 'unicorns'},
+            {emoji: '🐝', name: 'bees'},
+            {emoji: '🦋', name: 'butterflies'},
+            {emoji: '🐠', name: 'fish'},
+            {emoji: '🐦', name: 'birds'},
+            {emoji: '🐧', name: 'penguins'},
+{emoji: '🦉', name: 'owls'},
+{emoji: '🦇', name: 'bats'},
+{emoji: '🐢', name: 'turtles'},
+{emoji: '🐍', name: 'snakes'},
+{emoji: '🐞', name: 'ladybugs'},
+{emoji: '🐜', name: 'ants'},
+{emoji: '🦑', name: 'squids'},
+{emoji: '🦐', name: 'shrimps'}
+
+        ];
+
+        function getRandomAnimal() {
+            return animals[Math.floor(Math.random() * animals.length)];
+        }
+
+        function getRandomNumber(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function generateProblem() {
+            const animal = getRandomAnimal();
+            const line1Count = getRandomNumber(2, 7);
+            const line2Count = getRandomNumber(2, 7);
+            
+            return `
+                <div class="problem">
+                    <p>How many ${animal.name} are there?</p>
+                    <div class="emoji-line">${animal.emoji.repeat(line1Count)}</div>
+                    <div class="emoji-line">+ ${animal.emoji.repeat(line2Count)}</div>
+                    <div class="answer-line"></div>
+                </div>
+            `;
+        }
+
+        function generateWorksheet() {
+            const worksheet = document.getElementById('worksheet');
+            worksheet.innerHTML = '';
+            
+            for (let col = 0; col < 2; col++) {
+                const column = document.createElement('div');
+                column.className = 'column';
+                
+                for (let prob = 0; prob < 4; prob++) {
+                    column.innerHTML += generateProblem();
+                }
+                
+                worksheet.appendChild(column);
+            }
+        }
+
+        function togglePrintable() {
+            const isPrintable = document.getElementById('printable').checked;
+            document.body.classList.toggle('printable', isPrintable);
+        }
+
+        function generatePDF() {
+            const element = document.getElementById('worksheet-container');
+            const opt = {
+                margin: 10,
+                filename: 'animal_math_worksheet.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            // Temporarily hide controls
+            document.getElementById('controls').style.display = 'none';
+
+            // Add title to the worksheet for PDF
+            const title = document.createElement('h1');
+            title.textContent = 'Animal Math Worksheet';
+            element.insertBefore(title, element.firstChild);
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                // Restore controls and remove title
+                document.getElementById('controls').style.display = 'block';
+                element.removeChild(title);
+            });
+        }
+
+        // Generate the initial worksheet
+        generateWorksheet();
+    </script>
+</body>
+</html>
+
