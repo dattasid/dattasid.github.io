@@ -53,7 +53,7 @@
 </head>
 <body>
     <div id="controls">
-        <h1>Animal Math Worksheet</h1>
+        <h1>Kids Multiplication Worksheet</h1>
         <button onclick="generateWorksheet()">Generate New Worksheet</button>
         <label>
             <input type="checkbox" id="printable" onchange="togglePrintable()"> Printable
@@ -170,7 +170,7 @@
             const element = document.getElementById('worksheet-container');
             const opt = {
                 margin: 10,
-                filename: 'animal_math_worksheet.pdf',
+                filename: 'kids_multiplication_worksheet.pdf',
                 image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: { scale: 2 },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
@@ -181,7 +181,7 @@
 
             // Add title to the worksheet for PDF
             const title = document.createElement('h1');
-            title.textContent = 'Animal Math Worksheet';
+            title.textContent = 'Kids Multiplication Worksheet';
             element.insertBefore(title, element.firstChild);
 
             html2pdf().set(opt).from(element).save().then(() => {

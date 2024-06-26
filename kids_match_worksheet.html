@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kids Match Worksheet</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Emoji&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .worksheet {
+            /* display: flex;
+            justify-content: space-between; */
+        }
+        .column {
+            width: 90%;
+        }
+        .problem {
+            margin-bottom: 30px;
+        }
+        .emoji-line {
+            font-size: 3em;
+            line-height: 1.5;
+            /* text-align: right; */
+            width: 60%;
+
+        }
+        .answer-line {
+            border-top: 1px solid #000;
+            height: 30px;
+        }
+        .printable .emoji-line {
+            font-family: 'Noto Emoji', sans-serif;
+        }
+        #controls {
+            margin-bottom: 20px;
+        }
+        @media print {
+            #controls {
+                display: none;
+            }
+        }
+        .problem-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="controls">
+        <h1>Kids Match Worksheet</h1>
+        <button onclick="generateWorksheet()">Generate New Worksheet</button>
+        <label>
+            <input type="checkbox" id="printable" onchange="togglePrintable()"> Printable
+        </label>
+        <label>
+            <input type="checkbox" id="words" onchange="generateWorksheet()"> Words
+        </label>
+        <button onclick="generatePDF()">Download as PDF</button>
+    </div>
+    <div id="worksheet-container">
+        <p>Match left hand side with the right hand side</p>
+        <div class="worksheet" id="worksheet"></div>
+    </div>
+
+    <script>
+        const animals = [
+            ["🐶", "dog"],
+            ["🐱", "cat"],
+            ["🦁", "lion"],
+            ["🐔", "chicken"],
+            ["🐦", "bird"],
+            ["🐝", "bee"],
+            ["🍏", "green apple"],
+            ["🍎", "red apple"],
+            ["🍐", "pear"],
+            ["🍊", "orange"],
+            ["🍋", "lemon"],
+            ["🍌", "banana"],
+            ["🍉", "watermelon"],
+            ["🍇", "grapes"],
+            ["🍓", "strawberry"],
+            ["🥕", "carrot"],
+            ["🌽", "corn"],
+            ["🥦", "broccoli"],
+            ["🍅", "tomato"],
+            ["🥒", "cucumber"],
+            ["🌶️", "chili pepper"],
+            ["🫑", "bell pepper"],
+            ["🍆", "eggplant"],
+            ["🥔", "potato"],
+
+            ["🚒", "fire engine"],
+            ["🚓", "police car"],
+            ["🚑", "ambulance"],
+            ["🚜", "tractor"],
+            ["🏥", "hospital"],
+            ["🏫", "school"],
+            ["🏢", "office building"],
+            // ["👩‍⚕️", "woman health worker"],
+            // ["👨‍⚕️", "man health worker"],
+            ["👩‍🍳", "cook"],
+            ["👨‍🍳", "cook"],
+            ["👩‍🌾", "farmer"],
+            ["👨‍🌾", "farmer"],
+            ["👩‍🎓", "student"],
+            ["👨‍🎓", "student"],
+            ["👩‍🏫", "teacher"],
+            ["👨‍🏫", "teacher"],
+            ["👩‍🚒", "firefighter"],
+            // ["👨‍🚒", "firefighter"],
+            ["👩‍🔧", "mechanic"],
+            ["👨‍🔧", "mechanic"],
+            ["👩‍🔬", "scientist"],
+            ["👨‍🔬", "scientist"],
+
+            ["🐠", "fish"],
+            ["🐘", "elephant"],
+            ["🦒", "giraffe"],
+            ["🦓", "zebra"],
+            ["🦊", "fox"],
+            ["🦝", "raccoon"],
+            ["🐨", "koala"],
+            ["🐼", "panda"],
+            ["🦥", "sloth"],
+            ["🦦", "otter"],
+            ["🦔", "hedgehog"],
+            ["🐸", "frog"],
+            ["🐊", "crocodile"],
+            ["🐢", "turtle"],
+            ["🦎", "lizard"],
+            ["🐍", "snake"],
+            ["🐙", "octopus"],
+            ["🦑", "squid"],
+            ["🦐", "shrimp"],
+            ["🦀", "crab"],
+            ["🐡", "puffer fish"],
+            ["🐅", "tiger"],
+            ["🐆", "leopard"],
+            ["🐇", "rabbit"],
+            ["🦜", "parrot"],
+            ["🦚", "peacock"],
+            ["🦉", "owl"],
+            ["🦢", "swan"],
+            ["🦩", "flamingo"],
+            ["🦅", "eagle"],
+            ["🦃", "turkey"],
+            ["🦆", "duck"],
+            ["🐓", "rooster"],
+            ["🐿️", "squirrel"],
+            ["🦔", "hedgehog"],
+
+            ["📱", "mobile phone"],
+            ["📷", "camera"],
+            ["💻", "laptop"],
+            ["🖥️", "computer"],
+            ["⏰", "clock"],
+            ["🕰️", "clock"],
+            ["📞", "telephone"],
+            // ["📟", "pager"],
+            ["🎥", "movie camera"],
+            ["🎬", "clapper board"],
+            ["📺", "television"],
+            ["📻", "radio"],
+            ["🎙️", "microphone"],
+            ["🎧", "headphones"],
+            ["🖨️", "printer"],
+            ["⌨️", "keyboard"],
+            ["🖱️", "computer mouse"],
+            ["🖲️", "trackball"],
+            ["🕹️", "joystick"],
+
+            ["🛋️", "couch"],
+            ["🛏️", "bed"],
+            ["🚪", "door"],
+            ["🪟", "window"],
+            ["🚽", "toilet"],
+            ["🚿", "shower"],
+            ["🛁", "bathtub"],
+            ["🪠", "plunger"],
+            ["🧹", "broom"],
+            ["🧺", "picnic basket"],
+            ["🧼", "soap"],
+            ["🪣", "bucket"],
+            ["🧽", "sponge"],
+            ["🧴", "lotion bottle"],
+            ["🔑", "key"],
+            ["🔒", "lock"],
+            ["🪑", "chair"],
+            ["🛒", "shopping cart"],
+            ["🧯", "fire extinguisher"],
+            ["🕯️", "candle"],
+            ["🛠️", "hammer"],
+
+            ["🍴", "fork"],
+            ["🍽️", "plate"],
+            ["🥄", "spoon"],
+            ["🔪", "knife"],
+            ["🥣", "bowl"],
+            ["🍖", "meat"],
+            ["🥡", "takeout box"],
+            ["🧊", "ice"],
+            ["🧂", "salt"],
+            ["🧇", "waffle"],
+
+            ["🧬", "dna"],
+            ["🔬", "microscope"],
+            ["🔭", "telescope"],
+            ["📡", "satellite antenna"],
+            ["💡", "light bulb"],
+            ["🔦", "flashlight"],
+            ["🏮", "lantern"],
+            ["🪔", "diya lamp"],
+            ["📰", "newspaper"],
+            ["🗞️", "rolled-up newspaper"],
+
+            ["📕", "closed book"],
+            ["📖", "open book"],
+        ];
+
+        function getRandomAnimal() {
+            let i = Math.floor(Math.random() * animals.length)
+            console.log(i, animals.length, animals[i])
+
+            return animals[i];
+        }
+
+        function getRandomNumber(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function generateProblem(left, right) {
+            // const animal = getRandomAnimal();
+            // const line1Count = getRandomNumber(2, 7);
+            
+            return `
+                <div class="problem">
+                    <div class="problem-line">
+                        <div class="emoji-line">${left}</div>
+                        <div style="font-size: 2em; ">${right}</div>
+                    </div>
+                    
+                </div>
+            `;
+        }
+
+        // shuffle array
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+        function generateWorksheet() {
+            const worksheet = document.getElementById('worksheet');
+            worksheet.innerHTML = '';
+            isWord = document.getElementById('words').checked
+
+            const N = isWord ? 8 : 6
+            let lhs = [], rhs = []
+            for (let i = 0; i < N; i++) {
+                animal = getRandomAnimal();
+                lhs[i] = animal[0]
+                if (!isWord) {
+                    rhs[i] = getRandomNumber(1, 10)
+                    lhs[i] = (lhs[i] + " ").repeat(rhs[i])
+                }
+                else
+                rhs[i] = animal[1]
+            }
+            shuffleArray(lhs)
+            shuffleArray(rhs)
+
+            // for (let col = 0; col < 2; col++)
+            {
+                const column = document.createElement('div');
+                column.className = 'column';
+                
+                for (let prob = 0; prob < N; prob++) {
+                    column.innerHTML += generateProblem(lhs[prob], rhs[prob]);
+                }
+                
+                worksheet.appendChild(column);
+            }
+        }
+
+        function togglePrintable() {
+            const isPrintable = document.getElementById('printable').checked;
+            document.body.classList.toggle('printable', isPrintable);
+        }
+
+        function generatePDF() {
+            const element = document.getElementById('worksheet-container');
+            const opt = {
+                margin: 10,
+                filename: 'kids_match_worksheet.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            // Temporarily hide controls
+            document.getElementById('controls').style.display = 'none';
+
+            // Add title to the worksheet for PDF
+            const title = document.createElement('h1');
+            title.textContent = 'Kids Matching Worksheet';
+            element.insertBefore(title, element.firstChild);
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                // Restore controls and remove title
+                document.getElementById('controls').style.display = 'block';
+                element.removeChild(title);
+            });
+        }
+
+        // Generate the initial worksheet
+        generateWorksheet();
+    </script>
+</body>
+</html>
+
