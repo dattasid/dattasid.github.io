@@ -40,14 +40,14 @@
         #controls {
             margin-bottom: 20px;
         }
+        .problem-line {
+            display: flex;
+            justify-content: space-between;
+        }
         @media print {
             #controls {
                 display: none;
             }
-        }
-        .problem-line {
-            display: flex;
-            justify-content: space-between;
         }
     </style>
 </head>
@@ -58,9 +58,6 @@
         <label>
             <input type="checkbox" id="printable" onchange="togglePrintable()"> Printable
         </label>
-        <label>
-            <input type="checkbox" id="subtract"> Subtraction
-        </label>
         <button onclick="generatePDF()">Download as PDF</button>
     </div>
     <div id="worksheet-container">
@@ -68,42 +65,56 @@
     </div>
 
     <script>
-        const animals = [
-            {emoji: '🐶', name: 'dogs'},
-            {emoji: '🐱', name: 'cats'},
-            {emoji: '🐭', name: 'mice'},
-            {emoji: '🐹', name: 'hamsters'},
-            {emoji: '🐰', name: 'rabbits'},
-            {emoji: '🦊', name: 'foxes'},
-            {emoji: '🐻', name: 'bears'},
-            {emoji: '🐼', name: 'pandas'},
-            {emoji: '🐨', name: 'koalas'},
-            {emoji: '🐯', name: 'tigers'},
-            {emoji: '🦁', name: 'lions'},
-            {emoji: '🐮', name: 'cows'},
-            {emoji: '🐷', name: 'pigs'},
-            {emoji: '🐸', name: 'frogs'},
-            {emoji: '🐙', name: 'octopuses'},
-            {emoji: '🐵', name: 'monkeys'},
-            {emoji: '🦄', name: 'unicorns'},
-            {emoji: '🐝', name: 'bees'},
-            {emoji: '🦋', name: 'butterflies'},
-            {emoji: '🐠', name: 'fish'},
-            {emoji: '🐦', name: 'birds'},
-            {emoji: '🐧', name: 'penguins'},
-            {emoji: '🦉', name: 'owls'},
-            {emoji: '🦇', name: 'bats'},
-            {emoji: '🐢', name: 'turtles'},
-            {emoji: '🐍', name: 'snakes'},
-            {emoji: '🐞', name: 'ladybugs'},
-            {emoji: '🐜', name: 'ants'},
-            {emoji: '🦑', name: 'squids'},
-            {emoji: '🦐', name: 'shrimps'}
-
+        const pairs = [
+        ["🚗", "car", "🧳", "suitcases"],
+        ["🚗", "car", "👦", "boys"],
+        ["🚗", "car", "👧", "girls"],
+        ["🚗", "car", "👦🏽", "boys"],
+        ["🚗", "car", "👧🏾", "girls"],
+        ["🏠", "house", "🌷", "flowers"],
+        ["🏠", "house", "🪟", "windows"],
+        ["🏠", "house", "🚪", "doors"],
+        ["🐮", "cow", "🍼", "milk bottles", 'makes'],
+        ["🎒", "backpack", "📚", "books"],
+        ["🐔", "chicken", "🥚", "eggs", 'makes'],
+        ["🍪", "cookie", "🍫", "chocolate chips"],
+        ["🍕", "pizza", "🍅", "tomatoes"],
+        ["🌳", "lemon tree", "🍋", "lemons"],
+        ["🌳", "orange tree", "🍊", "oranges"],
+        ["🌴", "coconut tree", "🥥", "coconuts"],
+        ["🎣", "fishing rod", "🐟", "fish", "catches"],
+        ["🎨", "art palette", "🖌", "brushes"],
+        ["🚜", "tractor", "🌽", "corn ears", 'makes'],
+        ["🐕", "dog", "🦴", "bones"],
+        ["🎪", "tent", "🎟", "tickets"],
+        ["🎪", "tent", "🤡", "clowns"],
+        ["🐦", "bird", "🪶", "feathers"],
+        ["🪴", "plant", "🌸", "flowers"],
+        ["🚀", "rocket", "🪐", "planets"],
+        [ "🐁", "mouse", "🧀", "cheese blocks", 'eats'],
+        ["🎸", "guitar", "🎶", "music notes"],
+        ["⛺", "campsite", "🔥", "campfires"],
+        ["🐒", "monkey", "🍌", "bananas"],
+        ["🚜", "tractor", "🌾", "bales of hay"],
+        ["🐕", "dog", "🐾", "paw prints", 'makes'],
+        ["🚢", "ship", "⚓", "anchors"],
+        // ["🐓", "roosters", "🌄", "dawns"],
+        ["🐄", "cow", "🧀", "cheese blocks", 'makes'],
+        ["🐑", "sheep", "🧶", "balls of wool"],
+        ["🐘", "elephant", "🌴", "palm trees", 'eats'],
+        ["🐼", "panda", "🎍", "bamboo", 'eats'],
+        ["🌊", "lake", "🦢", "swans"],
+        ["🐔", "hen", "🐣", "eggs"],
+        ["🌊", "wave", "🐚", "shells"],
+        ["🐠", "fish", "🫧", "bubbles", 'makes'],
+        ["🍄", "mushroom", "🐸", "frogs"],
+        ["📷", "camera", "🌌", "photos", 'takes'],
+        ["🎃", "pumpkin", "🍬", "candies"],
+        ["🚂", "train", "🚃", "carriages"]
         ];
 
         function getRandomAnimal() {
-            return animals[Math.floor(Math.random() * animals.length)];
+            return pairs[Math.floor(Math.random() * pairs.length)];
         }
 
         function getRandomNumber(min, max) {
@@ -111,21 +122,23 @@
         }
 
         function generateProblem() {
-            const animal = getRandomAnimal();
+            const pair = getRandomAnimal();
+            const em1 = pair[0];
+            const name1 = pair[1];
+            const em2 = pair[2];
+            const name2 = pair[3];
+            const verb = pair[4] || 'has';
             const line1Count = getRandomNumber(2, 7);
             const line2Count = getRandomNumber(2, 7);
             
-            const isSubtract = document.getElementById('subtract').checked;
-            const op = isSubtract ? (Math.random() < 0.5 ? '+' : '-' )
-                                 : '+';
             return `
                 <div class="problem">
-                    <p>How many ${animal.name} are there?</p>
+                    <p>Each <span class="emoji-line">${em1}</span> ${name1} ${verb} <span class="emoji-line">${em2}</span> ${name2}. How many <span class="emoji-line">${em2}</span> ${name2} are there?</p>
                     <div class="problem-line">
-                        <div style="font-size: 2em">&nbsp;&nbsp;&nbsp;&nbsp;___</div><div class="emoji-line">${animal.emoji.repeat(line1Count)}</div>
+                        <div style="font-size: 2em">&nbsp;&nbsp;&nbsp;&nbsp;___</div><div class="emoji-line">${em1.repeat(line1Count)}</div>
                     </div>
                     <div class="problem-line">
-                        <div style="font-size: 2em">${op} &nbsp;___</div><div class="emoji-line">${animal.emoji.repeat(line2Count)}</div>
+                        <div style="font-size: 2em">X &nbsp;___</div><div class="emoji-line">${em2.repeat(line2Count)}</div>
                     </div>
                     <div class="answer-line"></div>
                 </div>
