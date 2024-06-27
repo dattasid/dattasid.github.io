@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emoji Size Sorting Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        #game-container {
+            text-align: center;
+        }
+        #emoji-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            margin: 20px 0;
+        }
+        .emoji {
+            cursor: move;
+            user-select: none;
+            margin: 0 10px;
+        }
+        .emoji.dragging {
+            opacity: 0.5;
+        }
+        .placeholder {
+            background-color: #ddd;
+            border-radius: 10px;
+            margin: 0 10px;
+        }
+        #message {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        #instructions {
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+        #instructions .smallest {
+            font-size: 0.8em;
+        }
+        #instructions .largest {
+            font-size: 1.5em;
+        }
+        #score {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        #celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: white;
+            font-size: 48px;
+            z-index: 100;
+        }
+        .firework {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            animation: explode .4s ease-out forwards;
+            z-index: 500;
+        }
+        @keyframes explode {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(30); opacity: .4; }
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <h1>Size Sorting Game</h1>
+        <div id="instructions"></div>
+        <div id="emoji-container"></div>
+        <div id="message"></div>
+        <div id="score">Score: 0</div>
+    </div>
+
+    <script>
+        const emojis = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🐯', '🦁', '🐮', '🐷', '🐸', '🐵', '🐔', '🐧', '🐦', '🐤', '🦆', '🦅', '🦉', '🦇', '🐺', '🐗', '🐴', '🦄', '🐝', '🐛', '🦋', '🐌', '🐞', '🐜', '🦟', '🦗', '🕷', '🦂', '🐢', '🐍', '🦎', '🦖', '🦕', '🐙', '🦑', '🦐', '🦞', '🦀', '🐡', '🐠', '🐟', '🐬', '🐳', '🐋', '🦈', '🐊', '🐅', '🐆', '🦓', '🦍', '🦧', '🐘', '🦛', '🦏', '🐪', '🐫', '🦒', '🦘', '🐃', '🐂', '🐄', '🐎', '🐖', '🐏', '🐑', '🦙', '🐐', '🦌', '🐕', '🐩', '🦮', '🐕‍🦺', '🐈', '🐈‍⬛', '🐓', '🦃', '🦚', '🦜', '🦢', '🦩', '🕊', '🐇', '🦝', '🦨', '🦡', '🦦', '🦥', '🐁', '🐀', '🐿', '🦔', '🐾', '🐉', '🐲', '🌵', '🎄', '🌲', '🌳', '🌴', '🌱', '🌿', '☘️', '🍀', '🎍', '🎋', '🍃', '🍂', '🍁', '🍄', '🌾', '💐', '🌷', '🌹', '🥀', '🌺', '🌸', '🌼', '🌻', '🌞', '🌝', '🌛', '🌜', '🌚', '🌕', '🌖', '🌗', '🌘', '🌑', '🌒', '🌓', '🌔', '🌙', '🌎', '🌍', '🌏', '🪐', '💫', '⭐️', '🌟', '✨', '⚡️', '☄️', '💥', '🔥', '🌪', '🌈', '☀️', '🌤', '⛅️', '🌥', '☁️', '🌦', '🌧', '⛈', '🌩', '🌨', '❄️', '☃️', '⛄️', '🌬', '💨', '💧', '💦', '☔️', '☂️', '🌊', '🌫', '🍏', '🍎', '🍐', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🍈', '🍒', '🍑', '🥭', '🍍', '🥥', '🥝', '🍅', '🍆', '🥑', '🥦', '🥬', '🥒', '🌶', '🌽', '🥕', '🧄', '🧅', '🥔', '🍠', '🥐', '🥯', '🍞', '🥖', '🥨', '🧀', '🥚', '🍳', '🧈', '🥞', '🧇', '🥓', '🥩', '🍗', '🍖', '🦴', '🌭', '🍔', '🍟', '🍕', '🥪', '🥙', '🧆', '🌮', '🌯', '🥗', '🥘', '🥫', '🍝', '🍜', '🍲', '🍛', '🍣', '🍱', '🥟', '🦪', '🍤', '🍙', '🍚', '🍘', '🍥', '🥠', '🥮', '🍢', '🍡', '🍧', '🍨', '🍦', '🥧', '🧁', '🍰', '🎂', '🍮', '🍭', '🍬', '🍫', '🍿', '🍩', '🍪', '🌰', '🥜', '🍯', '🥛', '🍼', '☕️', '🍵', '🧃', '🥤', '🍶', '🍺', '🍻', '🥂', '🍷', '🥃', '🍸', '🍹', '🧉', '🍾', '🧊', '🥄', '🍴', '🍽', '🥣', '🥡', '🥢', '🧂'];
+        const emojinames =[
+    ["🐶", "dogs"],
+    ["🐱", "cats"],
+    ["🐭", "mice"],
+    ["🐹", "hamsters"],
+    ["🐰", "rabbits"],
+    ["🦊", "foxes"],
+    ["🐻", "bears"],
+    ["🐼", "pandas"],
+    ["🐨", "koalas"],
+    ["🐯", "tigers"],
+    ["🦁", "lions"],
+    ["🐮", "cows"],
+    ["🐷", "pigs"],
+    ["🐸", "frogs"],
+    ["🐵", "monkeys"],
+    ["🚗", "cars"],
+    ["🚕", "taxis"],
+    ["🚙", "SUVs"],
+    ["🚌", "buses"],
+    ["🚎", "trolleys"],
+    ["🏎️", "race cars"],
+    ["🚓", "police cars"],
+    ["🚑", "ambulances"],
+    ["🚒", "fire trucks"],
+    ["🚚", "trucks"],
+    ["🚜", "tractors"],
+    ["🍏", "green apples"],
+    ["🍎", "red apples"],
+    ["🍐", "pears"],
+    ["🍊", "oranges"],
+    ["🍋", "lemons"],
+    ["🍌", "bananas"],
+    ["🍉", "watermelons"],
+    ["🍇", "grapes"],
+    ["🍓", "strawberries"],
+    ["🍈", "melons"],
+    ["🍒", "cherries"],
+    ["🍑", "peaches"],
+    ["🥕", "carrots"],
+    ["🌽", "corns"],
+    ["🥒", "cucumbers"],
+    ["🍆", "eggplants"],
+    ["🍅", "tomatoes"],
+    ["🥔", "potatoes"],
+    ["🥬", "lettuces"],
+    ["🥦", "broccolis"],
+    ["🌶️", "chili peppers"],
+    ["🧅", "onions"],
+    ["🧄", "garlics"]
+]
+        let currentEmoji;
+        let currentSizes;
+        let draggedElement = null;
+        let score = 0;
+        let isAscending = true;
+
+        function getRandomEmoji() {
+            return emojinames[Math.floor(Math.random() * emojinames.length)];
+        }
+
+        function getRandomSizes() {
+            const count = Math.floor(Math.random() * 5) + 3; // 3 to 7 emojis
+            const sizes = Array.from({length: count}, (_, i) => 30 + i * 20); // 30px to 150px
+            return sizes;
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function isSorted(arr) {
+            return arr.every((v, i, a) => !i || a[i-1] <= v);
+        }
+
+        function createGame() {
+            const container = document.getElementById('emoji-container');
+            container.innerHTML = '';
+            [currentEmoji, emojiname] = getRandomEmoji();
+            currentSizes = getRandomSizes();
+            
+            // Shuffle sizes and check if they're still sorted
+            ct = 0
+            do {
+                shuffleArray(currentSizes);
+                console.log("SHUFFLED")
+
+                ct++
+            } while (ct < 50 && (isSorted(currentSizes) || isSorted(currentSizes.slice().reverse())));
+
+            isAscending = Math.random() < 0.5;
+            updateInstructions(emojiname);
+
+            currentSizes.forEach((size, index) => {
+                const emojiElement = document.createElement('div');
+                emojiElement.className = 'emoji';
+                emojiElement.textContent = currentEmoji;
+                emojiElement.style.fontSize = `${size}px`;
+                emojiElement.setAttribute('draggable', 'true');
+                emojiElement.id = `emoji-${index}`;
+                container.appendChild(emojiElement);
+            });
+
+            setupDragAndDrop();
+        }
+
+        function updateInstructions(name) {
+            const instructions = document.getElementById('instructions');
+            if (isAscending) {
+                instructions.innerHTML = 'Sort the <b>'+name+'</b> from <span class="smallest">smallest</span> to <span class="largest">largest</span>';
+            } else {
+                instructions.innerHTML = 'Sort the <b>'+name+'</b> from <span class="largest">largest</span> to <span class="smallest">smallest</span>';
+            }
+        }
+
+        function setupDragAndDrop() {
+            const container = document.getElementById('emoji-container');
+            if (container.dragSetup) return
+
+            container.dragSetup = true
+            container.addEventListener('dragstart', (e) => {
+                draggedElement = e.target;
+                e.dataTransfer.setData('text/plain', e.target.id);
+                console.log("dragstart")
+                setTimeout(() => {
+                    draggedElement.classList.add('dragging');
+                    const placeholder = createPlaceholder(draggedElement);
+                    console.log("placeholder")
+                    container.insertBefore(placeholder, draggedElement);
+                    draggedElement.style.display = 'none';
+                }, 0);
+            });
+
+            container.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                // const target = e.target.closest('.emoji');
+                // console.log(target?.id, target?.classList)
+                // if (target && !target.classList.contains('placeholder') && target !== draggedElement) {
+                //     // const rect = target.getBoundingClientRect();
+                //     // const next = (e.clientY - rect.top) / (rect.bottom - rect.top) > 0.5 ? target.nextSibling : target;
+                //     next=target;
+                //     container.insertBefore(getPlaceholder(), next);
+                // }
+                p = getPlaceholder()
+                if (!p) return
+                let rect = p.getBoundingClientRect();
+                let mouseX = event.clientX;
+// console.log(mouseX, rect.left, rect.right)
+                if (mouseX < rect.left && p.previousSibling) {
+                    p.parentNode.insertBefore(p, p.previousSibling);
+                }
+                else if (mouseX > rect.right && p.nextSibling) {
+                    p.parentNode.insertBefore(p.nextSibling, p);
+                }
+            });
+
+            container.addEventListener('drop', (e) => {
+                e.preventDefault();
+                finishDrag();
+                checkOrder();
+            });
+
+            container.addEventListener('dragend', () => {
+                finishDrag();
+                checkOrder();
+            });
+        }
+
+        function createPlaceholder(element) {
+            const placeholder = document.createElement('div');
+            placeholder.className = 'emoji placeholder';
+            placeholder.style.width = `${element.offsetWidth}px`;
+            placeholder.style.height = `${element.offsetHeight}px`;
+            return placeholder;
+        }
+
+        function getPlaceholder() {
+            return document.querySelector('.placeholder');
+        }
+
+        function finishDrag() {
+            if (draggedElement) {
+                draggedElement.classList.remove('dragging');
+                draggedElement.style.display = '';
+                const placeholder = document.querySelector('.placeholder');
+                if (placeholder) {
+                    placeholder.parentNode.replaceChild(draggedElement, placeholder);
+                }
+                // Remove any remaining placeholders
+                document.querySelectorAll('.placeholder').forEach(el => el.remove());
+                draggedElement = null;
+            }
+        }
+
+        function checkOrder() {
+            const container = document.getElementById('emoji-container');
+            const emojis = Array.from(container.children);
+            const sizes = emojis.map(emoji => parseInt(emoji.style.fontSize));
+            const isSorted = isAscending 
+                ? sizes.every((size, index) => index === 0 || size > sizes[index - 1])
+                : sizes.every((size, index) => index === 0 || size < sizes[index - 1]);
+
+            if (isSorted) {
+                document.getElementById('message').textContent = 'Good Job!';
+                updateScore(50);
+                setTimeout(() => {
+                    document.getElementById('message').textContent = '';
+                    createGame();
+                }, 1500);
+            }
+        }
+
+        function updateScore(points) {
+            score += points;
+            document.getElementById('score').textContent = `Score: ${score}`;
+            if (score >= 500) {
+                celebrateWin();
+            }
+        }
+
+        function celebrateWin() {
+            const celebration = document.createElement('div');
+            celebration.id = 'celebration';
+            celebration.innerHTML = '<h1>Good Game!</h1>';
+            document.body.appendChild(celebration);
+
+            for (let i = 0; i < 500; i++) {
+              setTimeout(() => {
+                createFirework();
+              }, Math.random() * 10000);
+            }
+
+            setTimeout(() => {
+                document.body.removeChild(celebration);
+                score = 0;
+                document.getElementById('score').textContent = 'Score: 0';
+                createGame();
+            }, 15000);
+        }
+
+        function createFirework() {
+            const firework = document.createElement('div');
+            firework.className = 'firework';
+            firework.style.left = `${Math.random() * 200}%`;
+            firework.style.top = `${Math.random() * 200}%`;
+            firework.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 80%)`;
+            document.body.appendChild(firework);
+
+            setTimeout(() => {
+                document.body.removeChild(firework);
+            }, 500);
+        }
+
+        createGame();
+    </script>
+</body>
+</html>
