@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animal Counting Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        #game-container {
+            width: 80vw;
+            height: 60vh;
+            background-color: white;
+            border: 2px solid #ccc;
+            position: relative;
+            overflow: visible;
+        }
+        .animal {
+            position: absolute;
+            font-size: 2rem;
+            transition: left 0.2s ease-in-out;
+        }
+        #message {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        #score {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+        #guess {
+            font-size: 1rem;
+            padding: 5px;
+            width: 60px;
+        }
+        #win-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            font-weight: bold;
+            color: #4CAF50;
+            display: none;
+        }
+        .jumping {
+            animation: jump 0.5s infinite alternate;
+        }
+        @keyframes jump {
+            from { transform: translateY(0); }
+            to { transform: translateY(-40px); }
+        }
+    </style>
+</head>
+<body>
+    <div id="message"></div>
+    <div id="score">Score: 0</div>
+    <div id="game-container">
+        <div id="win-message">You Win!</div>
+    </div>
+    <input type="number" id="guess" placeholder="Count">
+
+    <script>
+        const animalEmojis = [
+  ["🐶", "dogs"],
+  ["🐱", "cats"],
+  ["🐭", "mice"],
+  ["🐹", "hamsters"],
+  ["🐰", "rabbits"],
+  ["🦊", "foxes"],
+  ["🐻", "bears"],
+  ["🐼", "pandas"],
+  ["🐨", "koalas"],
+  ["🐯", "tigers"],
+  ["🦁", "lions"],
+  ["🐮", "cows"],
+  ["🐷", "pigs"],
+  ["🐸", "frogs"],
+  ["🐵", "monkeys"],
+  ["🐔", "chickens"],
+  ["🐧", "penguins"],
+  ["🐦", "birds"],
+  ["🐤", "chicks"],
+  ["🐣", "hatchlings"],
+  ["🦆", "ducks"],
+  ["🦅", "eagles"],
+  ["🦉", "owls"],
+  ["🦇", "bats"],
+  ["🐺", "wolves"],
+  ["🐗", "boars"],
+  ["🐴", "horses"],
+  ["🦄", "unicorns"],
+  ["🐝", "bees"],
+  ["🐛", "bugs"],
+  ["🦋", "butterflies"],
+  ["🐌", "snails"],
+  ["🐚", "seashells"],
+  ["🐞", "ladybugs"],
+  ["🐜", "ants"],
+  ["🦗", "crickets"],
+  ["🦂", "scorpions"],
+  ["🦟", "mosquitoes"],
+  ["🦠", "microbes"],
+  ["🐢", "turtles"],
+  ["🐍", "snakes"],
+  ["🦎", "lizards"],
+  ["🦖", "dinosaurs"],
+  ["🦕", "brachiosauruses"],
+  ["🐙", "octopuses"],
+  ["🦑", "squids"],
+  ["🦐", "shrimps"],
+  ["🦞", "lobsters"],
+  ["🦀", "crabs"]
+
+        ];
+
+        let selectedAnimal, animalCount, animals, score = 0;
+        const gameContainer = document.getElementById('game-container');
+        const messageEl = document.getElementById('message');
+        const scoreEl = document.getElementById('score');
+        const guessInput = document.getElementById('guess');
+        const winMessageEl = document.getElementById('win-message');
+        let playerWon = false;
+        let iteration = 0
+
+        function getRandomInt(min, max) {
+            ret = Math.floor(Math.random() * (max - min + 1)) + min;
+            if (ret == 13) ret = 12;
+            return ret;
+        }
+
+        function initializeGame() {
+            gameContainer.innerHTML = '<div id="win-message">You Win!</div>';
+            winMessageEl.style.display = 'none';
+            selectedAnimal = animalEmojis[Math.floor(Math.random() * animalEmojis.length)];
+            animalCount = getRandomInt(3 + Math.round(iteration/2), 5+iteration);
+            const rowCount = getRandomInt(3, 7);
+            animals = [];
+            playerWon = false;
+            iteration++
+
+            messageEl.textContent = `How many ${selectedAnimal[1]} are there?`;
+            guessInput.value = '';
+
+            for (let i = 0; i < animalCount; i++) {
+                const animal = document.createElement('div');
+                animal.className = 'animal';
+                animal.textContent = selectedAnimal[0];
+                const row = i % rowCount;
+                const y = (row / rowCount) * 100;
+                const x = getRandomInt(0, 100);
+                animal.style.top = `${y}%`;
+                animal.style.left = `${x}%`;
+                gameContainer.appendChild(animal);
+                animals.push({ element: animal, row, x, speed: Math.random() < 0.3 ? 3 : 1, moving: false, destination: null });
+            }
+
+            guessInput.disabled = false;
+            guessInput.focus()
+        }
+
+        function moveAnimals() {
+            if (playerWon) return;
+            animals.forEach(animal => {
+                if (animal.moving) {
+                    if (animal.x === animal.destination) {
+                        animal.moving = false;
+                        animal.destination = null;
+                    } else {
+                        const step = animal.speed;
+                        animal.x = animal.x < animal.destination ? 
+                            Math.min(animal.x + step, animal.destination) : 
+                            Math.max(animal.x - step, animal.destination);
+                        animal.element.style.left = `${animal.x}%`;
+                    }
+                } else if (Math.random() < 0.03) {
+                    const sameRowAnimals = animals.filter(a => a.row === animal.row);
+                    const availablePositions = Array.from({ length: 19 }, (_, i) => i*5)
+                        .filter(pos => !sameRowAnimals.some(a=>a.destination >= pos -2 && a.destination <= pos + 2));
+                    if (availablePositions.length > 0) {
+                        animal.destination = availablePositions[Math.floor(Math.random() * availablePositions.length)];
+                        animal.moving = true;
+                        animal.speed = Math.random() < 0.3 ? 3 : 1;
+                    }
+                }
+            });
+        }
+
+        function addRandomAnimals(count) {
+            const rowCount = getRandomInt(3, 7);
+            for (let i = 0; i < count; i++) {
+              setTimeout(() => {
+                const animal = document.createElement('div');
+                animal.className = 'animal jumping';
+                animal.textContent = animalEmojis[Math.floor(Math.random() * animalEmojis.length)][0];
+                const row = i % rowCount;
+                const y = (row / rowCount) * 100;
+                const x = getRandomInt(0, 100);
+                animal.style.top = `${y}%`;
+                animal.style.left = `${x}%`;
+                gameContainer.appendChild(animal);
+              }, i * 100);
+            }
+        }
+
+        function checkGuess() {
+            const guess = parseInt(guessInput.value);
+            if (guess === animalCount) {
+                score += 10;
+                scoreEl.textContent = `Score: ${score}`;
+                guessInput.disabled = true
+
+                playerWon = true;
+
+                if (score >= 100) {
+                    winMessageEl.style.display = 'block';
+                    addRandomAnimals(25);
+                    animals.forEach(animal => animal.element.classList.add('jumping'));
+                    setTimeout(() => {
+                        score = 0;
+                        iteration = 0
+                        scoreEl.textContent = `Score: ${score}`;
+                        winMessageEl.style.display = 'none';
+                        initializeGame();
+                    }, 15000);
+                } else {
+                  animals.forEach(animal => {
+                    animal.element.style.animationDelay = `${Math.random() * 1-.8}s`;
+                    animal.element.classList.add('jumping')
+                  });
+                    setTimeout(initializeGame, 3000);
+                }
+            }
+        }
+
+        guessInput.addEventListener('input', checkGuess);
+
+        initializeGame();
+        setInterval(moveAnimals, 50);
+    </script>
+</body>
+</html>
