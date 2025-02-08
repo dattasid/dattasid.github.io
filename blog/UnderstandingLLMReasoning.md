@@ -68,3 +68,11 @@ It turned out to be a much bigger endeveur than I thought. The proof did not fit
 Proving anything using first order logic was so cumbersome, and involved so many steps, we were glad that we were using a different paradigm in real life: "human order logic."
 
 Most real life reasoning involves a large amount of "step jumps", 
+
+AIs main job is to provide good step jumps to reason with.
+
+Currently AI is also used to reason in places where we dont want to input all the correct steps to a automatic prover. (ir Wold model)
+
+It is currently difficult to deduce what intuitive rules has a LLM learned.
+
+
