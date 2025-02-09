@@ -67,7 +67,7 @@ It turned out to be a much bigger endeveur than I thought. The proof did not fit
 
 Proving anything using first order logic was so cumbersome, and involved so many steps, we were glad that we were using a different paradigm in real life: "human order logic."
 
-Most real life reasoning involves a large amount of "step jumps", 
+Most real life reasoning involves a large amount of "step jumps", short intuitive leaps of reason that are actually very easy to prove.
 
 AIs main job is to provide good step jumps to reason with.
 
